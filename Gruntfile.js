@@ -59,6 +59,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks("grunt-contrib-clean");
 
   // Default task(s).
-  //grunt.registerTask("default", ["clean", "copy", "uglify"]);
+  // grunt.registerTask("default", ["clean", "copy", "uglify"]);
   grunt.registerTask("default", ["clean", "copy"]);
 };

@@ -5,6 +5,7 @@
   // the main board
   // eslint-disable-next-line new-cap
   const board = Chessboard("board1", "start");
+  let currentTree = undefined;
 
   // load the openings structure
 
@@ -111,14 +112,14 @@
       $("#moves").empty();
 
       this.currentMove.successors.forEach(function (move) {
-        $("#moves").append('<p><a href="#" onclick="window.makemove(\''+move.san+'\');">' + move.linktext() + "</a></p>");
+        $("<p>" + move.linktext() + "</p>").appendTo($("#moves")).on("click", function() {currentTree.makemove(move.san);});
       });
     }
 
-    makemove(san){
-      for ( let i = 0; i < this.currentMove.successors.length; i++){
+    makemove(san) {
+      for (let i = 0; i < this.currentMove.successors.length; i++) {
         const candidate = this.currentMove.successors[i];
-        if ( candidate.san === san ){
+        if (candidate.san === san) {
           this.currentMove = candidate;
           this.chess.move(san);
           board.position(this.chess.fen());
@@ -127,19 +128,10 @@
         }
       }
     }
-
   };
 
-  function makemove(san){
-    currentTree.makemove(san);
-  }
-  window.makemove = makemove;
 
-  // display the buttons
-
-  let currentTree = undefined;
-
-  ///////////////////////////////////////////
+  // ========================================
   // Helper functions
   const __log = function (level, strings) {
     console.log("[" + level + "] " + strings.join(" / "));
@@ -172,7 +164,8 @@
     currentTree = new OpeningTree(content);
   };
 
-  ///////////////////////////////////////////
+  // ========================================
+
   // DOM interactions
   $(document).on("input", "#file-input", function (e) {
     readOneFile(e, parsePGNfile);
