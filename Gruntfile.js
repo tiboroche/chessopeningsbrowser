@@ -29,7 +29,8 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
-            src: "build/<%= pkg.name %>.min.js",
+            // src: "build/<%= pkg.name %>.min.js",
+            src: "src/<%= pkg.name %>.js",
             dest: "dist/",
             flatten: true,
           },
@@ -56,5 +57,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks("grunt-contrib-clean");
 
   // Default task(s).
-  grunt.registerTask("default", ["clean", "copy", "uglify"]);
+  //grunt.registerTask("default", ["clean", "copy", "uglify"]);
+  grunt.registerTask("default", ["clean", "copy"]);
 };
