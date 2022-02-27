@@ -23,6 +23,8 @@ module.exports = function (grunt) {
               "chess.js/chess.js",
               "@chrisoakman/chessboardjs/dist/*.min.*",
               "jquery/dist/jquery.min.js",
+              "pgn-parser/dist/pgn-parser.js",
+              "pgn-parser/dist/pgn-parser.js.map",
             ],
             dest: "dist/",
             flatten: true,

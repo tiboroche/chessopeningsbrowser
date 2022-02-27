@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 (function () {
   "use strict";
 
@@ -6,31 +7,133 @@
   const board = Chessboard("board1", "start");
 
   // load the openings structure
-  const OpeningTree = function (content) {
-    // console.log("coucou" + content);
 
-    const load = function (content) {
-      const games = [];
-      let currentGame = "";
+  const Move = class Move {
+    san; // the san coordinate of the move
+    comment;
+    predecessor;
+    openings;
+    successors;
 
-      content.split(/\r?\n/).forEach(function (line) {
-        if (currentGame === "") {
-          currentGame += line + "\n";
-        } else if (line.startsWith("[Event")) {
-          const cg = new Chess();
-          cg.load_pgn(currentGame);
-          games.push(cg);
-          currentGame = line + "\n";
-        } else {
-          currentGame += line + "\n";
-        }
+    constructor(san) {
+      this.san = san;
+      this.openings = [];
+      this.successors = [];
+    }
+
+    toString() {
+      return this.san + " (" + this.successors.length + "successors )";
+    }
+
+    linktext() {
+      let text = this.san + "[" + this.openings.join(",") + "]";
+      if (this.comment) {
+        text += this.comment;
+      }
+      return text;
+    }
+  };
+
+  const OpeningTree = class OpeningTree {
+    currentMove;
+    startMove;
+    chess;
+
+    constructor(content) {
+      this.startMove = new Move("");
+      this.currentMove = this.startMove;
+      this.chess = new Chess();
+
+      this.inittree(this.load(content));
+
+      debug("root", this.startMove);
+
+      this.startMove.successors.forEach(function (move) {
+        debug("start move", move);
       });
 
-      games.forEach((game) => console.log("Game : " + game.history() + " / " + game.get_comments()));
-    };
+      this.displaymoves();
+    }
 
-    load(content);
+    load(content) {
+      const games = pgnParser.parse(content);
+
+      // debug("games loaded", JSON.stringify(games));
+      log(`Loaded ${games.length} games.`);
+
+      return games;
+    }
+
+    inittree(games) {
+      let gamename;
+      const start = this.startMove;
+      games.forEach(function (game) {
+        // get the name of the game, the Event header
+        for (let i = 0; i < game["headers"].length; i++) {
+          const header = game["headers"][i];
+          if (header["name"] === "Event") {
+            gamename = header["value"];
+            break;
+          }
+        }
+
+        let curMove = start;
+        game.moves.forEach(function (move) {
+          let found = false;
+          for (let j = 0; j < curMove.successors.length; j++) {
+            const next = curMove.successors[j];
+            if (next.san === move["move"]) {
+              // found !
+              curMove = next;
+              found = true;
+              break;
+            }
+          }
+          // not found create a new node
+          if (!found) {
+            const next = new Move(move["move"]);
+            curMove.successors.push(next);
+            next.predecessor = curMove;
+            // debug("New move from", JSON.stringify(move), curMove, next);
+            curMove = next;
+          }
+
+          curMove.openings.push(gamename);
+          const comments = move["comments"];
+          if (comments && comments.length > 0) {
+            curMove.comment = comments[0]["text"];
+          }
+        });
+      });
+    }
+
+    displaymoves() {
+      $("#moves").empty();
+
+      this.currentMove.successors.forEach(function (move) {
+        $("#moves").append('<p><a href="#" onclick="window.makemove(\''+move.san+'\');">' + move.linktext() + "</a></p>");
+      });
+    }
+
+    makemove(san){
+      for ( let i = 0; i < this.currentMove.successors.length; i++){
+        const candidate = this.currentMove.successors[i];
+        if ( candidate.san === san ){
+          this.currentMove = candidate;
+          this.chess.move(san);
+          board.position(this.chess.fen());
+          this.displaymoves();
+          return;
+        }
+      }
+    }
+
   };
+
+  function makemove(san){
+    currentTree.makemove(san);
+  }
+  window.makemove = makemove;
 
   // display the buttons
 
@@ -38,13 +141,25 @@
 
   ///////////////////////////////////////////
   // Helper functions
+  const __log = function (level, strings) {
+    console.log("[" + level + "] " + strings.join(" / "));
+  };
+
+  const log = function (...args) {
+    __log("INFO", args);
+  };
+
+  const debug = function (...args) {
+    __log("DEBUG", args);
+  };
+
   const readOneFile = function (e, readerfunction) {
     const file = e.target.files[0];
     if (!file) {
       return;
     }
 
-    console.log("Reading file " + file);
+    log("Reading file " + file.name);
     const reader = new FileReader();
     reader.onload = function (e) {
       const contents = e.target.result;
