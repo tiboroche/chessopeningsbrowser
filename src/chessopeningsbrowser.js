@@ -27,9 +27,9 @@
     }
 
     linktext() {
-      let text = this.san + "[" + this.openings.join(",") + "]";
+      let text = this.san + " [" + this.openings.join(",") + "]";
       if (this.comment) {
-        text += this.comment;
+        text += " " + this.comment;
       }
       return text;
     }
@@ -41,11 +41,14 @@
     chess;
 
     constructor(content) {
+      this.content = content;
       this.startMove = new Move("");
       this.currentMove = this.startMove;
       this.chess = new Chess();
 
-      this.inittree(this.load(content));
+      this.inittree(this.load());
+
+      this.updateuri();
 
       debug("root", this.startMove);
 
@@ -56,13 +59,26 @@
       this.displaymoves();
     }
 
-    load(content) {
-      const games = pgnParser.parse(content);
+    load() {
+      let games = [];
+      try {
+        games = pgnParser.parse(this.content);
+      } catch {
+        alert("Invalid PGN file");
+      }
 
       // debug("games loaded", JSON.stringify(games));
       log(`Loaded ${games.length} games.`);
 
       return games;
+    }
+
+    updateuri() {
+      let url = window.location.origin + window.location.pathname;
+
+      url += "?content=" + LZString.compressToEncodedURIComponent(this.content);
+
+      window.history.pushState(undefined, "", url);
     }
 
     inittree(games) {
@@ -109,10 +125,42 @@
     }
 
     displaymoves() {
+      const pastmoves = [];
+      let past = this.currentMove;
+      let breadcrumb = "";
+
+      while (past.predecessor) {
+        pastmoves.unshift(past.san);
+        past = past.predecessor;
+      }
+
+      let turn = 0;
+      let white = true;
+      for (let i = 0; i < pastmoves.length; i++) {
+        if (white) {
+          // white turn
+          turn++;
+          breadcrumb += `${turn}. ${pastmoves[i]}`;
+        } else {
+          breadcrumb += ` ${pastmoves[i]} `;
+        }
+        white = !white;
+      }
+
+      $("#breadcrumb").empty();
+      $(`<p>${breadcrumb}</p>`).appendTo($("#breadcrumb"));
+
       $("#moves").empty();
 
       this.currentMove.successors.forEach(function (move) {
-        $("<p>" + move.linktext() + "</p>").appendTo($("#moves")).on("click", function() {currentTree.makemove(move.san);});
+        $(
+          `<p><button class=\"btn btn-primary p-3\">${move.linktext()}</button></p>`
+        )
+          .appendTo($("#moves"))
+          .on("click", function () {
+            currentTree.makemove(move.san);
+          });
+        // $(`<a class=\"primary-link\" href=\"#\">${move.linktext()}</a>`).appendTo($("#moves")).on("click", function() {currentTree.makemove(move.san);});
       });
     }
 
@@ -129,7 +177,6 @@
       }
     }
   };
-
 
   // ========================================
   // Helper functions
@@ -160,14 +207,29 @@
     reader.readAsText(file);
   };
 
-  const parsePGNfile = function (content) {
+  const parsePGNfile = (content) => {
     currentTree = new OpeningTree(content);
   };
 
   // ========================================
-
   // DOM interactions
   $(document).on("input", "#file-input", function (e) {
     readOneFile(e, parsePGNfile);
   });
+
+  const loadfromuri = () => {
+    // load the content from the uri
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const content = urlParams.get("content");
+
+    if (content) {
+      const uncompressed = LZString.decompressFromEncodedURIComponent(content);
+      if (uncompressed) {
+        parsePGNfile(uncompressed);
+      }
+    }
+  };
+
+  loadfromuri();
 })();
