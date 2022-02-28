@@ -132,19 +132,14 @@
       while (past.predecessor) {
         pastmoves.unshift(past.san);
         past = past.predecessor;
-      }
-
-      let turn = 0;
-      let white = true;
+      }      
+      
       for (let i = 0; i < pastmoves.length; i++) {
-        if (white) {
-          // white turn
-          turn++;
-          breadcrumb += `${turn}. ${pastmoves[i]}`;
-        } else {
-          breadcrumb += ` ${pastmoves[i]} `;
-        }
-        white = !white;
+        if (i % 2 === 0) {
+          // white turn          
+          breadcrumb += `${(i / 2) + 1}.`;
+        } 
+        breadcrumb += ` ${pastmoves[i]} `;        
       }
 
       $("#breadcrumb").empty();
