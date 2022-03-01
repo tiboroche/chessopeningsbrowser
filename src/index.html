@@ -26,15 +26,23 @@
 
 <body>
   <div class="container p-3">
-    <h1>Chess Openings Browser</h1>
-
     <div class="row">
-      <div class="col">
+      <div class=".col-xl-1">
+        <h1 class="text-center">Chess Openings Browser</h1>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-sm-auto">
         <div id="board1" style="width: 400px"></div>
+        <div id="upload" class="p-1">
+          <input type="file" id="pgnupload" style="display:none; "/>
+          <button id="pgnuploadlink" class="btn btn-small btn-block btn-primary">Upload new PGN file</button>          
+        </div>  
       </div>
       <div class="col">
-        Upload PGN file :
-        <input type="file" id="file-input" />
+        
+        <div id="toplay"></div>
         <div id="breadcrumb"></div>
         <div id="moves"></div>
       </div>
