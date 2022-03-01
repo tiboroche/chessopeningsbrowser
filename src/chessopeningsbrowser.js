@@ -2,12 +2,38 @@
 (function () {
   "use strict";
 
+  const DEFAULT = `
+  [Event "Italian"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O Nf6 {"Giuoco Piano"} *
+
+[Event "Ruy-Lopez"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 b5 5. Bb3 *
+  `;
+
   // the main board
-  // eslint-disable-next-line new-cap
-  const board = Chessboard("board1", "start");
   let currentTree = undefined;
 
-  // load the openings structure
+  // functions related to the board display
+  const Board = class Board {
+    constructor(chess) {
+      // eslint-disable-next-line new-cap
+      this.board = Chessboard("board1", "start");
+      this.chess = chess;
+    }
+
+    reset() {
+      // reset to default position
+      // TODO
+    }
+
+    move(san) {
+      this.chess.move(san);
+      this.board.position(this.chess.fen());
+    }
+
+  };
 
   const Move = class Move {
     san; // the san coordinate of the move
@@ -27,12 +53,31 @@
     }
 
     linktext() {
-      let text = this.san + " [" + this.openings.join(",") + "]";
+      let text = this.san;
+      if (this.openings.length == 1) {
+        text += " [" + this.openings.join(",") + "]";
+      } else {
+        text +=
+          " [" +
+          this.openings[0] +
+          " and " +
+          (this.openings.length - 1) +
+          " others]";
+      }
       if (this.comment) {
         text += " " + this.comment;
       }
       return text;
     }
+    
+    onlysuccessor(){
+      if ( this.successors.length == 1){
+        return this.successors[0];
+      }else{
+        return undefined;
+      }
+    }
+
   };
 
   const OpeningTree = class OpeningTree {
@@ -45,18 +90,20 @@
       this.startMove = new Move("");
       this.currentMove = this.startMove;
       this.chess = new Chess();
+      this.board = new Board(this.chess);
 
       this.inittree(this.load());
 
       this.updateuri();
 
-      debug("root", this.startMove);
+      // make the first move if only one
+      const onlysucc = this.currentMove.onlysuccessor();
+      if (onlysucc) {
+        this.makemove(onlysucc);
+      } else {
+        this.displaymoves();
+      }
 
-      this.startMove.successors.forEach(function (move) {
-        debug("start move", move);
-      });
-
-      this.displaymoves();
     }
 
     load() {
@@ -124,52 +171,76 @@
       });
     }
 
-    displaymoves() {
+    history() {
       const pastmoves = [];
       let past = this.currentMove;
-      let breadcrumb = "";
 
       while (past.predecessor) {
         pastmoves.unshift(past.san);
         past = past.predecessor;
-      }      
-      
+      }
+
+      return pastmoves;
+    }
+
+    displaymoves() {
+      const pastmoves = this.history();
+      let breadcrumb = "";
+      const white = pastmoves.length % 2 == 0;
+
       for (let i = 0; i < pastmoves.length; i++) {
         if (i % 2 === 0) {
-          // white turn          
-          breadcrumb += `${(i / 2) + 1}.`;
-        } 
-        breadcrumb += ` ${pastmoves[i]} `;        
+          // white turn
+          breadcrumb += `${i / 2 + 1}.`;
+        }
+        breadcrumb += ` ${pastmoves[i]} `;
       }
 
       $("#breadcrumb").empty();
+      $("#moves").empty();
+      $("#toplay").empty();
+
+      if (white) {
+        $(`<p>White to play</p>`).appendTo($("#toplay"));
+      } else {
+        $(`<p>Black to play</p>`).appendTo($("#toplay"));
+      }
       $(`<p>${breadcrumb}</p>`).appendTo($("#breadcrumb"));
 
-      $("#moves").empty();
+      const buttonsclass = "btn btn-small btn-block";
+
+      const buttonscolorclass = white ? "btn-light" : "btn-dark";
 
       this.currentMove.successors.forEach(function (move) {
         $(
-          `<p><button class=\"btn btn-primary p-3\">${move.linktext()}</button></p>`
+          `<p><button class="${buttonsclass} ${buttonscolorclass}">${move.linktext()}</button></p>`
         )
           .appendTo($("#moves"))
           .on("click", function () {
-            currentTree.makemove(move.san);
+            currentTree.makemove(move);
           });
         // $(`<a class=\"primary-link\" href=\"#\">${move.linktext()}</a>`).appendTo($("#moves")).on("click", function() {currentTree.makemove(move.san);});
       });
     }
 
-    makemove(san) {
-      for (let i = 0; i < this.currentMove.successors.length; i++) {
-        const candidate = this.currentMove.successors[i];
-        if (candidate.san === san) {
-          this.currentMove = candidate;
-          this.chess.move(san);
-          board.position(this.chess.fen());
-          this.displaymoves();
-          return;
+    async makemove(nextmove) {
+      let candidate = nextmove;
+
+      while (true) {
+        this.board.move(candidate.san);
+        const next = candidate.onlysuccessor();
+
+        if (next) {
+          await sleep(300);
+          candidate = next;
+        } else {
+          break;
         }
       }
+
+      this.currentMove = candidate;
+      this.displaymoves();
+      return;
     }
   };
 
@@ -186,6 +257,10 @@
   const debug = function (...args) {
     __log("DEBUG", args);
   };
+
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
 
   const readOneFile = function (e, readerfunction) {
     const file = e.target.files[0];
@@ -208,8 +283,13 @@
 
   // ========================================
   // DOM interactions
-  $(document).on("input", "#file-input", function (e) {
+  $(document).on("change", "#pgnupload", function (e) {
     readOneFile(e, parsePGNfile);
+    $("#pgnupload").value = null;
+  });
+
+  $("#pgnuploadlink").on("click", function () {
+    $("#pgnupload").trigger("click");
   });
 
   const loadfromuri = () => {
@@ -223,6 +303,8 @@
       if (uncompressed) {
         parsePGNfile(uncompressed);
       }
+    } else {
+      parsePGNfile(DEFAULT);
     }
   };
 
