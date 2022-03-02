@@ -20,12 +20,12 @@ module.exports = function (grunt) {
             expand: true,
             cwd: "node_modules/",
             src: [
-              "chess.js/chess.js",
-              "@chrisoakman/chessboardjs/dist/*.min.*",
+              "chess.js/chess.js",              
               "jquery/dist/jquery.min.js",
               "pgn-parser/dist/pgn-parser.js",
               "pgn-parser/dist/pgn-parser.js.map",
               "lz-string/libs/lz-string.js",
+              "cm-chessboard/src/cm-chessboard/*.js",
             ],
             dest: "dist/",
             flatten: true,
@@ -45,9 +45,11 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
-            src: "img/**",
-            dest: "dist",
+            cwd: "node_modules/cm-chessboard",            
+            src: "assets/**",
+            dest: "dist/",
           },
+
         ],
       },
     },
