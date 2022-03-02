@@ -42,8 +42,6 @@ const Board = class Board {
   }
 
   reset() {
-    // reset to default position
-    // TODO
     this.board.removeMarkers();
     this.board.setPosition("start");
   }
@@ -57,8 +55,14 @@ const Board = class Board {
     
   }
 
+  setPosition(fen){
+    this.board.removeMarkers();
+    this.board.setPosition(fen);
+  }
+
   move(san) {
     const move = this.chess.move(san);
+    debug("Making move", san, this.chess.ascii(), move);
     if (move) {
       this.board.removeMarkers();
       this.board.addMarker(move["from"], MARKER_TYPE.frame);
@@ -311,11 +315,13 @@ const OpeningTree = class OpeningTree {
 
   backonemove(){
     this.currentMove = this.currentMove.predecessor;
+    this.chess.undo();
+    this.board.setPosition(this.chess.fen())
     this.displaymoves();
   }
 
   resetboard(){
-    this.chess = new Chess();
+    this.chess.reset();
     this.currentMove = this.startMove;
     this.board.reset();
     this.displaymoves();
