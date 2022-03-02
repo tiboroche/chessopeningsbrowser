@@ -1,10 +1,10 @@
 [Event "Italienne"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O Nf6 {"Partie tranquille"} *
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O Nf6 {Partie tranquille} *
 
 [Event "Espagnole"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 b5 5. Bb3 {"Ne pas echanger fou et cavalier"} *
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 b5 5. Bb3 {Ne pas echanger fou et cavalier} *
 
 [Event "Ecossaise"]
 
@@ -12,7 +12,7 @@
 
 [Event "Gambit Dame accepté"]
 
-1. d4 d5 2. c4 dxc4 3. Qa4+ {"Permet de reprendre le pion par la dame"} *
+1. d4 d5 2. c4 dxc4 3. Qa4+ {Permet de reprendre le pion par la dame} *
 
 [Event "Philidor"]
 
@@ -20,7 +20,7 @@
 
 [Event "Défense Russe"]
 
-1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 {"Surtout ne pas prendre par le cavalier pour les noirs"} 4. Nf3 Nxe4  *
+1. e4 e5 2. Nf3 Nf6 3. Nxe5 d6 {Surtout ne pas prendre par le cavalier pour les noirs} 4. Nf3 Nxe4  *
 
 [Event "Sicilienne ouverte"]
 
@@ -28,11 +28,11 @@
 
 [Event "Défense Scandinave"]
 
-1. e4 d5 2. exd5 Qxd5 3. Nc3 {"Attention, sortie trop tot de la dame"} *
+1. e4 d5 2. exd5 Qxd5 3. Nc3 {Attention, sortie trop tot de la dame} *
 
 [Event "Défense française"]
 
-1. e4 e6 2. d4 d5 3. e5 c5 {"Fou c8 enfermé pour les noirs"} *
+1. e4 e6 2. d4 d5 3. e5 c5 {Fou c8 enfermé pour les noirs} *
 
 [Event "Défense Caro-Kann"]
 
