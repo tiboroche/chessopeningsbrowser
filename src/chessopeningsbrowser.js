@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-import { Chessboard, MARKER_TYPE } from "./Chessboard.js";
+import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
 
 const DEFAULT = `
   [Event "Italian"]
@@ -44,6 +44,17 @@ const Board = class Board {
   reset() {
     // reset to default position
     // TODO
+    this.board.removeMarkers();
+    this.board.setPosition("start");
+  }
+
+  switch(){
+    if (this.board.getOrientation() == COLOR.white){
+      this.board.setOrientation(COLOR.black);
+    }else{
+      this.board.setOrientation(COLOR.white);
+    }
+    
   }
 
   move(san) {
@@ -229,7 +240,7 @@ const OpeningTree = class OpeningTree {
     return html;
   }
 
-  showbreadcrumb(movelist) {    
+  showbreadcrumb(movelist) {
     let breadcrumb = "";
 
     for (let i = 0; i < movelist.length; i++) {
@@ -262,6 +273,7 @@ const OpeningTree = class OpeningTree {
     const buttonsclass = "m-1 btn btn-small btn-block";
 
     const buttonscolorclass = white ? "btn-light" : "btn-dark";
+    const otherbuttonscolorclass = "btn-secondary";
 
     this.currentMove.successors.forEach(function (move) {
       $(
@@ -271,8 +283,46 @@ const OpeningTree = class OpeningTree {
         .on("click", function () {
           currentTree.makemove(move);
         });
-      // $(`<a class=\"primary-link\" href=\"#\">${move.linktext()}</a>`).appendTo($("#moves")).on("click", function() {currentTree.makemove(move.san);});
     });
+
+    // add the three other buttons
+    $(
+      `<button class="${buttonsclass} ${otherbuttonscolorclass}">Back</button>`
+    )
+      .appendTo($("#moves"))
+      .on("click", () => {
+        this.backonemove();
+      });
+    $(
+      `<button class="${buttonsclass} ${otherbuttonscolorclass}">Reset</button>`
+    )
+      .appendTo($("#moves"))
+      .on("click", () => {
+        this.resetboard();        
+      });
+    $(
+      `<button class="${buttonsclass} ${otherbuttonscolorclass}">Switch</button>`
+    )
+      .appendTo($("#moves"))
+      .on("click", () => {
+        this.switchboard();
+      });
+  }
+
+  backonemove(){
+    this.currentMove = this.currentMove.predecessor;
+    this.displaymoves();
+  }
+
+  resetboard(){
+    this.chess = new Chess();
+    this.currentMove = this.startMove;
+    this.board.reset();
+    this.displaymoves();
+  }
+
+  switchboard(){
+    this.board.switch();
   }
 
   async makemove(nextmove) {
