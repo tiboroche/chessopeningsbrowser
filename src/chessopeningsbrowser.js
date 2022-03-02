@@ -194,9 +194,9 @@ const OpeningTree = class OpeningTree {
     });
   }
 
-  history() {
+  history(move = this.currentMove) {
     const pastmoves = [];
-    let past = this.currentMove;
+    let past = move;
 
     while (past.predecessor) {
       pastmoves.unshift(past);
@@ -229,7 +229,7 @@ const OpeningTree = class OpeningTree {
     return html;
   }
 
-  showbreadcrumb(movelist) {
+  showbreadcrumb(movelist) {    
     let breadcrumb = "";
 
     for (let i = 0; i < movelist.length; i++) {
@@ -283,6 +283,7 @@ const OpeningTree = class OpeningTree {
       const next = candidate.onlysuccessor();
 
       if (next) {
+        this.showbreadcrumb(this.history(candidate));
         await sleep(300);
         candidate = next;
       } else {
