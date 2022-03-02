@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-import { Chessboard } from "./Chessboard.js";
+import { Chessboard, MARKER_TYPE } from "./Chessboard.js";
 
 const DEFAULT = `
   [Event "Italian"]
@@ -10,6 +10,22 @@ const DEFAULT = `
 
 1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 b5 5. Bb3 *
   `;
+
+const WHITE_LETTERS = {
+  K: "K",
+  Q: "Q",
+  B: "B",
+  N: "N",
+  R: "R",
+};
+
+const BLACK_LETTERS = {
+  K: "L",
+  Q: "W",
+  B: "V",
+  N: "M",
+  R: "T",
+};
 
 // the main board
 let currentTree = undefined;
@@ -31,8 +47,16 @@ const Board = class Board {
   }
 
   move(san) {
-    this.chess.move(san);
-    this.board.setPosition(this.chess.fen());
+    const move = this.chess.move(san);
+    if (move) {
+      this.board.removeMarkers();
+      this.board.addMarker(move["from"], MARKER_TYPE.frame);
+      this.board.addMarker(move["to"], MARKER_TYPE.frame);
+      this.board.movePiece(move["from"], move["to"]);
+    } else {
+      alert("Invalid move !");
+    }
+    // this.board.setPosition(this.chess.fen());
   }
 };
 
@@ -175,27 +199,57 @@ const OpeningTree = class OpeningTree {
     let past = this.currentMove;
 
     while (past.predecessor) {
-      pastmoves.unshift(past.san);
+      pastmoves.unshift(past);
       past = past.predecessor;
     }
 
     return pastmoves;
   }
 
-  displaymoves() {
-    const pastmoves = this.history();
-    let breadcrumb = "";
-    const white = pastmoves.length % 2 == 0;
+  santohtml(move, white) {
+    // https://github.com/joshwalters/open-chess-font
+    // check the first letter for a piece
+    //
+    let html = "";
+    let san = move.san;
+    const letters = white ? WHITE_LETTERS : BLACK_LETTERS;
+    const pieceletter = letters[san[0]];
 
-    for (let i = 0; i < pastmoves.length; i++) {
-      if (i % 2 === 0) {
+    if (pieceletter) {
+      html += `<span style="font-family: openchessfontregular;">${pieceletter}</span>`;
+      san = san.slice(1);
+    }
+
+    html += `<b>${san}</b>`;
+
+    if (move.comment) {
+      html += `<i>${move.comment}</i>`;
+    }
+
+    return html;
+  }
+
+  showbreadcrumb(movelist) {
+    let breadcrumb = "";
+
+    for (let i = 0; i < movelist.length; i++) {
+      const white = i % 2;
+      if (white === 0) {
         // white turn
         breadcrumb += `${i / 2 + 1}.`;
       }
-      breadcrumb += ` ${pastmoves[i]} `;
+      breadcrumb += ` ${this.santohtml(movelist[i], white)} `;
     }
 
     $("#breadcrumb").empty();
+    $(`<p>${breadcrumb}</p>`).appendTo($("#breadcrumb"));
+  }
+
+  displaymoves() {
+    const pastmoves = this.history();
+    const white = pastmoves.length % 2 == 0;
+
+    this.showbreadcrumb(pastmoves);
     $("#moves").empty();
     $("#toplay").empty();
 
@@ -204,7 +258,6 @@ const OpeningTree = class OpeningTree {
     } else {
       $(`<p>Black to play</p>`).appendTo($("#toplay"));
     }
-    $(`<p>${breadcrumb}</p>`).appendTo($("#breadcrumb"));
 
     const buttonsclass = "m-1 btn btn-small btn-block";
 
