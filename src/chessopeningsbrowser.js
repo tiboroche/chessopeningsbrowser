@@ -4,9 +4,9 @@ import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
 const CHESS_COM_URI = "https://chess.com/explorer?moveList=";
 
 const DEFAULT = `
-  [Event "Italian"]
+[Event "Italian"]
 
-1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O Nf6 {"Giuoco Piano"} *
+1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O Nf6 {Giuoco Piano} *
 
 [Event "Ruy-Lopez"]
 
@@ -139,8 +139,22 @@ const OpeningTree = class OpeningTree {
 
   load() {
     let games = [];
+
+    // add missing if needed
+    let newcontent = "";
+    this.content.split(/\r?\n/).forEach(function (line){
+      line = line.trim();
+      newcontent += line;
+      if (line.startsWith("1.") && ! line.endsWith("*")){
+        newcontent += " *";
+      }
+      newcontent += "\n";
+    })
+
+    debug("Reading PGN ", newcontent);
+
     try {
-      games = pgnParser.parse(this.content);
+      games = pgnParser.parse(newcontent);
     } catch {
       alert("Invalid PGN file");
     }
@@ -441,10 +455,11 @@ const loadfromuri = () => {
     const uncompressed = LZString.decompressFromEncodedURIComponent(content);
     if (uncompressed) {
       parsePGNfile(uncompressed);
+      return;
     }
-  } else {
-    parsePGNfile(DEFAULT, false);
   }
+    
+  parsePGNfile(DEFAULT, false);  
 };
 
 loadfromuri();
