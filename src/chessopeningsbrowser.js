@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
 
 const CHESS_COM_URI = "https://chess.com/explorer?moveList=";
@@ -146,14 +145,14 @@ const OpeningTree = class OpeningTree {
 
     // add missing if needed
     let newcontent = "";
-    this.content.split(/\r?\n/).forEach(function (line){
+    this.content.split(/\r?\n/).forEach(function (line) {
       line = line.trim();
       newcontent += line;
-      if (line.startsWith("1.") && ! line.endsWith("*")){
+      if (line.startsWith("1.") && !line.endsWith("*")) {
         newcontent += " *";
       }
       newcontent += "\n";
-    })
+    });
 
     debug("Reading PGN ", newcontent);
 
@@ -232,7 +231,7 @@ const OpeningTree = class OpeningTree {
     return pastmoves;
   }
 
-  santohtml(move, white, openings= false) {
+  santohtml(move, white, openings = false) {
     // check the first letter for a piece
     let html = "";
     let san = move.san;
@@ -246,7 +245,7 @@ const OpeningTree = class OpeningTree {
 
     html += `<b>${san}`;
 
-    if ( openings ){
+    if (openings) {
       if (move.openings.length == 1) {
         html += " [" + move.openings.join(",") + "]";
       } else {
@@ -256,7 +255,7 @@ const OpeningTree = class OpeningTree {
           " and " +
           (move.openings.length - 1) +
           " others]";
-      }  
+      }
     }
 
     html += `</b>`;
@@ -308,7 +307,8 @@ const OpeningTree = class OpeningTree {
 
     const buttonsclass = "btn btn-small btn-block";
 
-    const buttonscolorclass = (white ? "btn-outline-secondary" : "btn-outline-dark") + " m-1";
+    const buttonscolorclass =
+      (white ? "btn-outline-secondary" : "btn-outline-dark") + " m-1";
     const otherbuttonscss = "btn-secondary m-1";
     const chessbuttonscolorclass = "btn-success m-1";
 
@@ -333,13 +333,26 @@ const OpeningTree = class OpeningTree {
     });
 
     this.currentMove.successors.forEach((move) => {
-      button($("#moves"), this.santohtml(move, white, true), buttonscolorclass, () => {
-        currentTree.makemove(move);
-      });
+      button(
+        $("#moves"),
+        this.santohtml(move, white, true),
+        buttonscolorclass,
+        () => {
+          currentTree.makemove(move);
+        }
+      );
     });
 
-    button(movesdiv, "See on chess.com", chessbuttonscolorclass, () => {            
-      window.open(CHESS_COM_URI + this.history().map(move => move.san).join("+"), '_blank').focus();
+    button(movesdiv, "See on chess.com", chessbuttonscolorclass, () => {
+      window
+        .open(
+          CHESS_COM_URI +
+            this.history()
+              .map((move) => move.san)
+              .join("+"),
+          "_blank"
+        )
+        .focus();
     });
   }
 
@@ -440,8 +453,10 @@ $(document).on("change", "#pgnupload", function (e) {
   $("#pgnupload").value = null;
 });
 
-$("#pgndownloadlink").on("click", function(){
-  const blob = new Blob([currentTree.content], {type: "application/vnd.chess-pgn, application/x-chess-pgn"});
+$("#pgndownloadlink").on("click", function () {
+  const blob = new Blob([currentTree.content], {
+    type: "application/vnd.chess-pgn, application/x-chess-pgn",
+  });
   saveAs(blob, "openings.pgn");
 });
 
@@ -462,8 +477,8 @@ const loadfromuri = () => {
       return;
     }
   }
-    
-  parsePGNfile(DEFAULT, false);  
+
+  parsePGNfile(DEFAULT, false);
 };
 
 loadfromuri();
