@@ -3,14 +3,18 @@ module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     uglify: {
-      options: {
-        // eslint-disable-next-line max-len
-        banner:
-          '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
-      },
-      build: {
+      pkg: {
+        options: {
+          // eslint-disable-next-line max-len
+          banner:
+            '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n',
+        },
         src: "src/<%= pkg.name %>.js",
         dest: "build/<%= pkg.name %>.min.js",
+      },
+      chess: {
+        src: "node_modules/chess.js/chess.js",
+        dest: "build/chess.min.js",
       },
     },
     copy: {
@@ -20,26 +24,25 @@ module.exports = function (grunt) {
             expand: true,
             cwd: "node_modules/",
             src: [
-              "chess.js/chess.js",              
               "jquery/dist/jquery.min.js",
               "pgn-parser/dist/pgn-parser.js",
               "pgn-parser/dist/pgn-parser.js.map",
               "lz-string/libs/lz-string.js",
-              "cm-chessboard/src/cm-chessboard/*.js",              
+              "cm-chessboard/src/cm-chessboard/*.js",
               "file-saver/dist/*.min.js",
             ],
             dest: "dist/",
             flatten: true,
           },
           {
-            expand: true,            
+            expand: true,
             src: "resources/*",
             dest: "dist/",
             flatten: true,
           },
           {
             expand: true,
-            src: "build/<%= pkg.name %>.min.js",
+            src: "build/*.min.js",
             // src: "src/<%= pkg.name %>.js",
             dest: "dist/",
             flatten: true,
@@ -56,7 +59,6 @@ module.exports = function (grunt) {
             src: "assets/**",
             dest: "dist/",
           },
-
         ],
       },
     },
