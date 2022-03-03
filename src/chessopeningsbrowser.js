@@ -1,6 +1,8 @@
 /* eslint-disable require-jsdoc */
 import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
 
+const CHESS_COM_URI = "https://chess.com/explorer?moveList=";
+
 const DEFAULT = `
   [Event "Italian"]
 
@@ -73,10 +75,10 @@ const Board = class Board {
       return this.board.movePiece(chessmove["from"], chessmove["to"]);
     } else {
       alert("Invalid move !");
-    }    
+    }
   }
 
-  destroy(){
+  destroy() {
     this.board.destroy();
   }
 };
@@ -251,13 +253,13 @@ const OpeningTree = class OpeningTree {
     return html;
   }
 
-  showbreadcrumb(movelist) {    
+  showbreadcrumb(movelist) {
     $("#breadcrumb").empty();
 
     const p = $(`<p>&nbsp;</p>`).appendTo($("#breadcrumb"));
 
     for (let i = 0; i < movelist.length; i++) {
-      const white = (i % 2) === 0;
+      const white = i % 2 === 0;
       let breadcrumb = "";
       if (white) {
         // white turn
@@ -265,18 +267,22 @@ const OpeningTree = class OpeningTree {
       }
       breadcrumb += ` ${this.santohtml(movelist[i], white)} `;
 
-      $(`<span role="button">${breadcrumb}</a>`).appendTo(p).on("click", () => {this.backtomove(movelist[i]); });
+      $(`<span role="button">${breadcrumb}</a>`)
+        .appendTo(p)
+        .on("click", () => {
+          this.backtomove(movelist[i]);
+        });
     }
-
-    
   }
 
   displaymoves() {
     const pastmoves = this.history();
     const white = pastmoves.length % 2 == 0;
 
+    const movesdiv = $("#moves");
+
     this.showbreadcrumb(pastmoves);
-    $("#moves").empty();
+    movesdiv.empty();
     $("#toplay").empty();
 
     if (white) {
@@ -287,35 +293,38 @@ const OpeningTree = class OpeningTree {
 
     const buttonsclass = "btn btn-small btn-block";
 
-    const marginMoves = "my-1";    
-    const marginTopButtons = "mx-1";    
-
-    const buttonscolorclass = white ? "btn-light" : "btn-dark";
-    const otherbuttonscolorclass = "btn-secondary";
+    const buttonscolorclass = (white ? "btn-light" : "btn-dark") + " m-1";
+    const otherbuttonscss = "btn-secondary m-1";
+    const chessbuttonscolorclass = "btn-success m-1";
 
     const topbuttons = $(
       '<div class="btn-group btn-group-sm" role="group" ></div>'
-    ).appendTo($("#moves"));
+    ).appendTo(movesdiv);
 
-
-    const topbutton = (text, clickHandler) => {
-      $(`<button class="${buttonsclass} ${marginTopButtons} ${otherbuttonscolorclass}">${text}</button>`)
-      .appendTo(topbuttons)
-      .on("click", clickHandler);
+    const button = (to, text, cssclass, clickHandler) => {
+      $(`<button class="${buttonsclass} ${cssclass}">${text}</button>`)
+        .appendTo(to)
+        .on("click", clickHandler);
     };
 
-    topbutton("Back", () => { this.backonemove();});
-    topbutton("Reset", () => { this.resetboard();});
-    topbutton("Switch", () => { this.switchboard();});
+    button(topbuttons, "Back", otherbuttonscss, () => {
+      this.backonemove();
+    });
+    button(topbuttons, "Reset", otherbuttonscss, () => {
+      this.resetboard();
+    });
+    button(topbuttons, "Switch", otherbuttonscss, () => {
+      this.switchboard();
+    });
 
     this.currentMove.successors.forEach(function (move) {
-      $(
-        `<button class="${buttonsclass} ${marginMoves} ${buttonscolorclass}">${move.linktext()}</button>`
-      )
-        .appendTo($("#moves"))
-        .on("click", function () {
-          currentTree.makemove(move);
-        });
+      button($("#moves"), move.linktext(), buttonscolorclass, () => {
+        currentTree.makemove(move);
+      });
+    });
+
+    button(movesdiv, "See on chess.com", chessbuttonscolorclass, () => {            
+      window.open(CHESS_COM_URI + this.history().map(move => move.san).join("+"), '_blank').focus();
     });
   }
 
@@ -323,8 +332,8 @@ const OpeningTree = class OpeningTree {
     this.backtomove(this.currentMove.predecessor);
   }
 
-  backtomove(move){
-    while(this.currentMove != move && this.currentMove.predecessor){
+  backtomove(move) {
+    while (this.currentMove != move && this.currentMove.predecessor) {
       this.currentMove = this.currentMove.predecessor;
       this.chess.undo();
     }
@@ -403,7 +412,7 @@ const readOneFile = function (e, readerfunction) {
 };
 
 const parsePGNfile = (content, updateuri = true) => {
-  if ( currentTree ) {
+  if (currentTree) {
     currentTree.board.destroy();
   }
   currentTree = new OpeningTree(content, updateuri);
