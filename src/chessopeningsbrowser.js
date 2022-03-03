@@ -101,24 +101,6 @@ const Move = class Move {
     return this.san + " (" + this.successors.length + "successors )";
   }
 
-  linktext() {
-    let text = this.san;
-    if (this.openings.length == 1) {
-      text += " [" + this.openings.join(",") + "]";
-    } else {
-      text +=
-        " [" +
-        this.openings[0] +
-        " and " +
-        (this.openings.length - 1) +
-        " others]";
-    }
-    if (this.comment) {
-      text += " " + this.comment;
-    }
-    return text;
-  }
-
   onlysuccessor() {
     if (this.successors.length == 1) {
       return this.successors[0];
@@ -232,7 +214,7 @@ const OpeningTree = class OpeningTree {
     return pastmoves;
   }
 
-  santohtml(move, white) {
+  santohtml(move, white, openings= false) {
     // check the first letter for a piece
     let html = "";
     let san = move.san;
@@ -244,7 +226,22 @@ const OpeningTree = class OpeningTree {
       san = san.slice(1);
     }
 
-    html += `<b>${san}</b>`;
+    html += `<b>${san}`;
+
+    if ( openings ){
+      if (move.openings.length == 1) {
+        html += " [" + move.openings.join(",") + "]";
+      } else {
+        html +=
+          " [" +
+          move.openings[0] +
+          " and " +
+          (move.openings.length - 1) +
+          " others]";
+      }  
+    }
+
+    html += `</b>`;
 
     if (move.comment) {
       html += ` <i>${move.comment}</i>`;
@@ -293,7 +290,7 @@ const OpeningTree = class OpeningTree {
 
     const buttonsclass = "btn btn-small btn-block";
 
-    const buttonscolorclass = (white ? "btn-light" : "btn-dark") + " m-1";
+    const buttonscolorclass = (white ? "btn-outline-secondary" : "btn-outline-dark") + " m-1";
     const otherbuttonscss = "btn-secondary m-1";
     const chessbuttonscolorclass = "btn-success m-1";
 
@@ -317,8 +314,8 @@ const OpeningTree = class OpeningTree {
       this.switchboard();
     });
 
-    this.currentMove.successors.forEach(function (move) {
-      button($("#moves"), move.linktext(), buttonscolorclass, () => {
+    this.currentMove.successors.forEach((move) => {
+      button($("#moves"), this.santohtml(move, white, true), buttonscolorclass, () => {
         currentTree.makemove(move);
       });
     });
