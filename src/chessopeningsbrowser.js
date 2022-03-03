@@ -12,19 +12,19 @@ const DEFAULT = `
   `;
 
 const WHITE_LETTERS = {
-  K: "K",
-  Q: "Q",
-  B: "B",
-  N: "N",
-  R: "R",
+  K: "k",
+  Q: "q",
+  B: "b",
+  N: "h",
+  R: "r",
 };
 
 const BLACK_LETTERS = {
-  K: "L",
-  Q: "W",
-  B: "V",
-  N: "M",
-  R: "T",
+  K: "l",
+  Q: "w",
+  B: "n",
+  N: "j",
+  R: "t",
 };
 
 // the main board
@@ -124,7 +124,7 @@ const OpeningTree = class OpeningTree {
   startMove;
   chess;
 
-  constructor(content) {
+  constructor(content, updateuri) {
     this.content = content;
     this.startMove = new Move("");
     this.currentMove = this.startMove;
@@ -133,7 +133,9 @@ const OpeningTree = class OpeningTree {
 
     this.inittree(this.load());
 
-    this.updateuri();
+    if ( updateuri ){
+      this.updateuri();
+    }
 
     // make the first move if only one
     const onlysucc = this.currentMove.onlysuccessor();
@@ -231,7 +233,7 @@ const OpeningTree = class OpeningTree {
     const pieceletter = letters[san[0]];
 
     if (pieceletter) {
-      html += `<span style="font-family: openchessfontregular;">${pieceletter}</span>`;
+      html += `<span style="font-family: chessregular;">${pieceletter}</span>`;
       san = san.slice(1);
     }
 
@@ -386,8 +388,8 @@ const readOneFile = function (e, readerfunction) {
   reader.readAsText(file);
 };
 
-const parsePGNfile = (content) => {
-  currentTree = new OpeningTree(content);
+const parsePGNfile = (content, updateuri=true) => {
+  currentTree = new OpeningTree(content, updateuri);
 };
 
 // ========================================
@@ -413,7 +415,7 @@ const loadfromuri = () => {
       parsePGNfile(uncompressed);
     }
   } else {
-    parsePGNfile(DEFAULT);
+    parsePGNfile(DEFAULT, false);
   }
 };
 
