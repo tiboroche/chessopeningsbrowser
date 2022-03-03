@@ -126,6 +126,7 @@ const OpeningTree = class OpeningTree {
     this.currentMove = this.startMove;
     this.chess = new Chess();
     this.board = new Board(this.chess);
+    this.gameslength = 0;
 
     this.inittree(this.load());
 
@@ -167,6 +168,8 @@ const OpeningTree = class OpeningTree {
     // debug("games loaded", JSON.stringify(games));
     log(`Loaded ${games.length} games.`);
 
+    this.gameslength = games.length;
+
     return games;
   }
 
@@ -176,6 +179,8 @@ const OpeningTree = class OpeningTree {
     url += "?content=" + LZString.compressToEncodedURIComponent(this.content);
 
     window.history.pushState(undefined, "", url);
+
+    alert(`${this.gameslength} games loaded. Don't forget to bookmark the updated link !`);
   }
 
   inittree(games) {
