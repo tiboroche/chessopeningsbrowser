@@ -46,28 +46,34 @@ const Board = class Board {
     this.board.setPosition("start");
   }
 
-  switch(){
-    if (this.board.getOrientation() == COLOR.white){
+  switch() {
+    if (this.board.getOrientation() == COLOR.white) {
       this.board.setOrientation(COLOR.black);
-    }else{
+    } else {
       this.board.setOrientation(COLOR.white);
     }
-    
   }
 
-  setPosition(fen){
+  setPosition(fen) {
     this.board.removeMarkers();
     this.board.setPosition(fen);
   }
 
-  move(san) {
-    const move = this.chess.move(san);
-    debug("Making move", san, this.chess.ascii(), move);
-    if (move) {
-      this.board.removeMarkers();
-      this.board.addMarker(move["from"], MARKER_TYPE.frame);
-      this.board.addMarker(move["to"], MARKER_TYPE.frame);
-      this.board.movePiece(move["from"], move["to"]);
+  markmove(chessmove) {
+    this.board.removeMarkers();
+    this.board.addMarker(chessmove["from"], MARKER_TYPE.frame);
+    this.board.addMarker(chessmove["to"], MARKER_TYPE.frame);
+  }
+
+  move(move) {
+    const chessmove = this.chess.move(move.san);
+
+    move.chessmove = chessmove;
+
+    debug("Making move", move.san, this.chess.ascii(), chessmove);
+    if (chessmove) {
+      this.markmove(chessmove);
+      this.board.movePiece(chessmove["from"], chessmove["to"]);
     } else {
       alert("Invalid move !");
     }
@@ -81,6 +87,7 @@ const Move = class Move {
   predecessor;
   openings;
   successors;
+  chessmove;
 
   constructor(san) {
     this.san = san;
@@ -133,7 +140,7 @@ const OpeningTree = class OpeningTree {
 
     this.inittree(this.load());
 
-    if ( updateuri ){
+    if (updateuri) {
       this.updateuri();
     }
 
@@ -292,9 +299,7 @@ const OpeningTree = class OpeningTree {
     });
 
     // add the three other buttons
-    $(
-      `<button class="${buttonsclass} ${otherbuttonscolorclass}">Back</button>`
-    )
+    $(`<button class="${buttonsclass} ${otherbuttonscolorclass}">Back</button>`)
       .appendTo($("#moves"))
       .on("click", () => {
         this.backonemove();
@@ -304,7 +309,7 @@ const OpeningTree = class OpeningTree {
     )
       .appendTo($("#moves"))
       .on("click", () => {
-        this.resetboard();        
+        this.resetboard();
       });
     $(
       `<button class="${buttonsclass} ${otherbuttonscolorclass}">Switch</button>`
@@ -315,21 +320,26 @@ const OpeningTree = class OpeningTree {
       });
   }
 
-  backonemove(){
-    this.currentMove = this.currentMove.predecessor;
-    this.chess.undo();
-    this.board.setPosition(this.chess.fen())
-    this.displaymoves();
+  backonemove() {
+    if (this.currentMove.predecessor) {
+      this.currentMove = this.currentMove.predecessor;
+      this.chess.undo();
+      this.board.setPosition(this.chess.fen());
+      if (this.currentMove.chessmove) {
+        this.board.markmove(this.currentMove.chessmove);
+      }
+      this.displaymoves();
+    }
   }
 
-  resetboard(){
+  resetboard() {
     this.chess.reset();
     this.currentMove = this.startMove;
     this.board.reset();
     this.displaymoves();
   }
 
-  switchboard(){
+  switchboard() {
     this.board.switch();
   }
 
@@ -337,7 +347,7 @@ const OpeningTree = class OpeningTree {
     let candidate = nextmove;
 
     while (true) {
-      await this.board.move(candidate.san);
+      await this.board.move(candidate);
       const next = candidate.onlysuccessor();
 
       if (next) {
@@ -388,7 +398,7 @@ const readOneFile = function (e, readerfunction) {
   reader.readAsText(file);
 };
 
-const parsePGNfile = (content, updateuri=true) => {
+const parsePGNfile = (content, updateuri = true) => {
   currentTree = new OpeningTree(content, updateuri);
 };
 
