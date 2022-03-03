@@ -1,5 +1,7 @@
 import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
 
+const DEBUG = document.location.host.startsWith("localhost");
+
 const CHESS_COM_URI = "https://chess.com/explorer?moveList=";
 
 const DEFAULT = `
@@ -417,7 +419,9 @@ const log = function (...args) {
 };
 
 const debug = function (...args) {
-  __log("DEBUG", args);
+  if ( DEBUG ){
+    __log("DEBUG", args);
+  }
 };
 
 function sleep(ms) {
