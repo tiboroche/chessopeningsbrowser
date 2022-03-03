@@ -32,16 +32,15 @@ module.exports = function (grunt) {
             flatten: true,
           },
           {
-            expand: true,
-            // src: "build/<%= pkg.name %>.min.js",
+            expand: true,            
             src: "resources/*",
             dest: "dist/",
             flatten: true,
           },
           {
             expand: true,
-            // src: "build/<%= pkg.name %>.min.js",
-            src: "src/<%= pkg.name %>.js",
+            src: "build/<%= pkg.name %>.min.js",
+            // src: "src/<%= pkg.name %>.js",
             dest: "dist/",
             flatten: true,
           },
@@ -71,5 +70,5 @@ module.exports = function (grunt) {
 
   // Default task(s).
   // grunt.registerTask("default", ["clean", "copy", "uglify"]);
-  grunt.registerTask("default", ["clean", "copy"]);
+  grunt.registerTask("default", ["clean", "uglify", "copy"]);
 };
