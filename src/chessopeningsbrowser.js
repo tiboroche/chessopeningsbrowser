@@ -482,7 +482,7 @@ const loadfromuri = () => {
   if (content) {
     const uncompressed = LZString.decompressFromEncodedURIComponent(content);
     if (uncompressed) {
-      parsePGNfile(uncompressed);
+      parsePGNfile(uncompressed, false);
       return;
     }
   }
