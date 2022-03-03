@@ -27,14 +27,11 @@ const BLACK_LETTERS = {
   R: "t",
 };
 
-// the main board
 let currentTree = undefined;
 
 // functions related to the board display
 const Board = class Board {
   constructor(chess) {
-    // eslint-disable-next-line new-cap
-    // this.board = Chessboard("board1", "start");
     this.board = new Chessboard(document.getElementById("board1"), {
       position: "start",
     });
@@ -76,8 +73,7 @@ const Board = class Board {
       return this.board.movePiece(chessmove["from"], chessmove["to"]);
     } else {
       alert("Invalid move !");
-    }
-    // this.board.setPosition(this.chess.fen());
+    }    
   }
 
   destroy(){
@@ -235,9 +231,7 @@ const OpeningTree = class OpeningTree {
   }
 
   santohtml(move, white) {
-    // https://github.com/joshwalters/open-chess-font
     // check the first letter for a piece
-    //
     let html = "";
     let san = move.san;
     const letters = white ? WHITE_LETTERS : BLACK_LETTERS;
@@ -251,26 +245,30 @@ const OpeningTree = class OpeningTree {
     html += `<b>${san}</b>`;
 
     if (move.comment) {
-      html += `<i>${move.comment}</i>`;
+      html += ` <i>${move.comment}</i>`;
     }
 
     return html;
   }
 
-  showbreadcrumb(movelist) {
-    let breadcrumb = "&nbsp;";
+  showbreadcrumb(movelist) {    
+    $("#breadcrumb").empty();
+
+    const p = $(`<p>&nbsp;</p>`).appendTo($("#breadcrumb"));
 
     for (let i = 0; i < movelist.length; i++) {
       const white = i % 2;
+      let breadcrumb = "";
       if (white === 0) {
         // white turn
         breadcrumb += `${i / 2 + 1}.`;
       }
       breadcrumb += ` ${this.santohtml(movelist[i], white)} `;
+
+      $(`<span role="button">${breadcrumb}</a>`).appendTo(p).on("click", () => {this.backtomove(movelist[i]); });
     }
 
-    $("#breadcrumb").empty();
-    $(`<p>${breadcrumb}</p>`).appendTo($("#breadcrumb"));
+    
   }
 
   displaymoves() {
@@ -322,15 +320,20 @@ const OpeningTree = class OpeningTree {
   }
 
   backonemove() {
-    if (this.currentMove.predecessor) {
+    this.backtomove(this.currentMove.predecessor);
+  }
+
+  backtomove(move){
+    while(this.currentMove != move && this.currentMove.predecessor){
       this.currentMove = this.currentMove.predecessor;
       this.chess.undo();
-      this.board.setPosition(this.chess.fen());
-      if (this.currentMove.chessmove) {
-        this.board.markmove(this.currentMove.chessmove);
-      }
-      this.displaymoves();
     }
+
+    this.board.setPosition(this.chess.fen());
+    if (this.currentMove.chessmove) {
+      this.board.markmove(this.currentMove.chessmove);
+    }
+    this.displaymoves();
   }
 
   resetboard() {
