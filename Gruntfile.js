@@ -63,14 +63,20 @@ module.exports = function (grunt) {
       },
     },
     clean: ["dist/"],
+    shell: {
+      insert_ga : {
+        command: 'sed -e "/____GOOGLE_ANALYTICS____/{" -e "r./ga.js" -e "d" -e "}" -i dist/index.html'
+      }
+    }
   });
 
   // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks("grunt-contrib-uglify");
   grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-contrib-clean");
+  grunt.loadNpmTasks("grunt-shell");
 
   // Default task(s).
   // grunt.registerTask("default", ["clean", "copy", "uglify"]);
-  grunt.registerTask("default", ["clean", "uglify", "copy"]);
+  grunt.registerTask("default", ["clean", "uglify", "copy", "shell:insert_ga"]);
 };
