@@ -73,11 +73,15 @@ const Board = class Board {
     debug("Making move", move.san, this.chess.ascii(), chessmove);
     if (chessmove) {
       this.markmove(chessmove);
-      this.board.movePiece(chessmove["from"], chessmove["to"]);
+      return this.board.movePiece(chessmove["from"], chessmove["to"]);
     } else {
       alert("Invalid move !");
     }
     // this.board.setPosition(this.chess.fen());
+  }
+
+  destroy(){
+    this.board.destroy();
   }
 };
 
@@ -254,7 +258,7 @@ const OpeningTree = class OpeningTree {
   }
 
   showbreadcrumb(movelist) {
-    let breadcrumb = "";
+    let breadcrumb = "&nbsp;";
 
     for (let i = 0; i < movelist.length; i++) {
       const white = i % 2;
@@ -283,41 +287,38 @@ const OpeningTree = class OpeningTree {
       $(`<p>Black to play</p>`).appendTo($("#toplay"));
     }
 
-    const buttonsclass = "m-1 btn btn-small btn-block";
+    const buttonsclass = "btn btn-small btn-block";
+
+    const marginMoves = "my-1";    
+    const marginTopButtons = "mx-1";    
 
     const buttonscolorclass = white ? "btn-light" : "btn-dark";
     const otherbuttonscolorclass = "btn-secondary";
 
+    const topbuttons = $(
+      '<div class="btn-group btn-group-sm" role="group" ></div>'
+    ).appendTo($("#moves"));
+
+
+    const topbutton = (text, clickHandler) => {
+      $(`<button class="${buttonsclass} ${marginTopButtons} ${otherbuttonscolorclass}">${text}</button>`)
+      .appendTo(topbuttons)
+      .on("click", clickHandler);
+    };
+
+    topbutton("Back", () => { this.backonemove();});
+    topbutton("Reset", () => { this.resetboard();});
+    topbutton("Switch", () => { this.switchboard();});
+
     this.currentMove.successors.forEach(function (move) {
       $(
-        `<button class="${buttonsclass} ${buttonscolorclass}">${move.linktext()}</button>`
+        `<button class="${buttonsclass} ${marginMoves} ${buttonscolorclass}">${move.linktext()}</button>`
       )
         .appendTo($("#moves"))
         .on("click", function () {
           currentTree.makemove(move);
         });
     });
-
-    // add the three other buttons
-    $(`<button class="${buttonsclass} ${otherbuttonscolorclass}">Back</button>`)
-      .appendTo($("#moves"))
-      .on("click", () => {
-        this.backonemove();
-      });
-    $(
-      `<button class="${buttonsclass} ${otherbuttonscolorclass}">Reset</button>`
-    )
-      .appendTo($("#moves"))
-      .on("click", () => {
-        this.resetboard();
-      });
-    $(
-      `<button class="${buttonsclass} ${otherbuttonscolorclass}">Switch</button>`
-    )
-      .appendTo($("#moves"))
-      .on("click", () => {
-        this.switchboard();
-      });
   }
 
   backonemove() {
@@ -352,7 +353,7 @@ const OpeningTree = class OpeningTree {
 
       if (next) {
         this.showbreadcrumb(this.history(candidate));
-        await sleep(300);
+        await sleep(100);
         candidate = next;
       } else {
         break;
@@ -399,6 +400,9 @@ const readOneFile = function (e, readerfunction) {
 };
 
 const parsePGNfile = (content, updateuri = true) => {
+  if ( currentTree ) {
+    currentTree.board.destroy();
+  }
   currentTree = new OpeningTree(content, updateuri);
 };
 
