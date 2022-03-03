@@ -257,9 +257,9 @@ const OpeningTree = class OpeningTree {
     const p = $(`<p>&nbsp;</p>`).appendTo($("#breadcrumb"));
 
     for (let i = 0; i < movelist.length; i++) {
-      const white = i % 2;
+      const white = (i % 2) === 0;
       let breadcrumb = "";
-      if (white === 0) {
+      if (white) {
         // white turn
         breadcrumb += `${i / 2 + 1}.`;
       }
