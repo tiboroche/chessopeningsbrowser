@@ -11,7 +11,11 @@ const DEFAULT = `
 [Event "Ruy-Lopez"]
 
 1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Ba4 b5 5. Bb3 *
-  `;
+
+[Event "Queen Gambit accepted"]
+
+1. d4 d5 2. c4 dxc4 3. Qa4+ *
+`;
 
 const WHITE_LETTERS = {
   K: "k",
