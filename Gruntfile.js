@@ -26,6 +26,7 @@ module.exports = function (grunt) {
               "pgn-parser/dist/pgn-parser.js.map",
               "lz-string/libs/lz-string.js",
               "cm-chessboard/src/cm-chessboard/*.js",              
+              "file-saver/dist/*.min.js",
             ],
             dest: "dist/",
             flatten: true,

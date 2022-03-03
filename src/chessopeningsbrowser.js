@@ -422,6 +422,11 @@ $(document).on("change", "#pgnupload", function (e) {
   $("#pgnupload").value = null;
 });
 
+$("#pgndownloadlink").on("click", function(){
+  const blob = new Blob([currentTree.content], {type: "application/vnd.chess-pgn, application/x-chess-pgn"});
+  saveAs(blob, "openings.pgn");
+});
+
 $("#pgnuploadlink").on("click", function () {
   $("#pgnupload").trigger("click");
 });

@@ -28,6 +28,7 @@
 
   <script src="chess.js"></script>
   <script src="pgn-parser.js"></script>
+  <script src="FileSaver.min.js"></script>  
   <script src="lz-string.js"></script>  
 
   <script type="module" src="chessopeningsbrowser.js" defer></script>
@@ -50,7 +51,8 @@
         <div id="board1" style="width: 400px"></div>
         <div id="upload" class="p-1">
           <input type="file" id="pgnupload" style="display:none; "/>
-          <button id="pgnuploadlink" class="btn btn-small btn-block btn-primary">Upload new PGN file</button>          
+          <button id="pgnuploadlink" class="btn btn-small btn-block btn-primary">Upload new PGN file</button>
+          <button id="pgndownloadlink" class="btn btn-small btn-block btn-primary">Download current PGN file</button>
         </div>  
       </div>
       <div class="col">
