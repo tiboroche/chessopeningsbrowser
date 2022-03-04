@@ -11,6 +11,7 @@
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   
   <link rel="stylesheet" href="assets/styles/cm-chessboard.css">
+  <link rel="stylesheet" href="flags/flag-icons.css">
 
   <!-- https://www.dafont.com/chess.font -->
   <style>
@@ -42,7 +43,7 @@
   <div class="container p-3" style="width: 1000px;">
     <div class="row">
       <div class="col">
-        <h1 class="text-center">CHess Openings Browser</h1>
+        <h1 class="text-center" id="title"></h1>
       </div>
     </div>
     
@@ -51,9 +52,13 @@
         <div id="board1" style="width: 400px"></div>
         <div id="upload" class="p-1">
           <input type="file" id="pgnupload" style="display:none; "/>
-          <button id="pgnuploadlink" class="btn btn-small btn-block btn-primary">Upload new PGN file</button>
-          <button id="pgndownloadlink" class="btn btn-small btn-block btn-primary">Download current PGN file</button>
-        </div>  
+          <button id="pgnuploadlink" class="btn btn-small btn-block btn-primary"></button>
+          <button id="pgndownloadlink" class="btn btn-small btn-block btn-primary"></button>
+        </div>
+        <div class="p-1">
+          <span class="fi fi-fr" id="flag-fr" role="button"></span>
+          <span class="fi fi-us" id="flag-us" role="button"></span>
+        </div>
       </div>
       <div class="col">
         
@@ -62,19 +67,7 @@
         <div id="moves" class="btn-group-vertical" style="width: 250px;"></div>
       </div>
     </div>
-    <div class="row mt-3">
-      <p>This tool is meant to be a simple way to explore a custom repository of openings.</p>
-
-      <p> How to use : 
-        <ul>
-          <li>Create a PGN file with one game per opening you want to add. You can add comments between {} after the moves. The title of the opening must be in the Event header. You can click the "Download current PGN file" to get an example.</li>
-          <li>Upload your file using the "Upload new PGN file" button. You can then explore your openings with the buttons on the right of the chessboard.</li>
-          <li>You can bookmark the URI after your upload (it should have a part like this : ?content=qDFKQJF...) to access your file directly without uploading it everytime.</li>
-        </ul>
-      </p>
-
-      <p>All the code is ran on the browser, the PGN file is not sent back to the server and not collected. You can check the code on <a href="https://github.com/tiboroche/chessopeningsbrowser" target="_blank">Github.</a></p>
-
+    <div class="row mt-3" id="help_text">
     </div>
   </div>
 </body>

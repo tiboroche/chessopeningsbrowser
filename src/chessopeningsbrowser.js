@@ -1,4 +1,5 @@
 import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
+import { messages } from "./messages.js";
 
 const DEBUG = document.location.host.startsWith("localhost");
 
@@ -35,6 +36,7 @@ const BLACK_LETTERS = {
 };
 
 let currentTree = undefined;
+let currentlang = "en";
 
 // functions related to the board display
 const Board = class Board {
@@ -79,7 +81,7 @@ const Board = class Board {
       this.markmove(chessmove);
       return this.board.movePiece(chessmove["from"], chessmove["to"]);
     } else {
-      alert("Invalid move !");
+      alert(_("invalid_mode"));
     }
   }
 
@@ -103,7 +105,7 @@ const Move = class Move {
   }
 
   toString() {
-    return this.san + " (" + this.successors.length + "successors )";
+    return `${this.san} (${this.successors.length}successors )`;
   }
 
   onlysuccessor() {
@@ -162,7 +164,7 @@ const OpeningTree = class OpeningTree {
     try {
       games = pgnParser.parse(newcontent);
     } catch {
-      alert("Invalid PGN file");
+      alert(_("invalid_pgn"));
     }
 
     // debug("games loaded", JSON.stringify(games));
@@ -180,7 +182,7 @@ const OpeningTree = class OpeningTree {
 
     window.history.pushState(undefined, "", url);
 
-    alert(`${this.gameslength} games loaded. Don't forget to bookmark the updated link !`);
+    alert(`${this.gameslength} ${_("loaded")}`);
   }
 
   inittree(games) {
@@ -256,12 +258,7 @@ const OpeningTree = class OpeningTree {
       if (move.openings.length == 1) {
         html += " [" + move.openings.join(",") + "]";
       } else {
-        html +=
-          " [" +
-          move.openings[0] +
-          " and " +
-          (move.openings.length - 1) +
-          " others]";
+        html += ` [${move.openings[0]} ${_("and")} ${(move.openings.length - 1)} ${_("others")}]`;
       }
     }
 
@@ -306,10 +303,12 @@ const OpeningTree = class OpeningTree {
     movesdiv.empty();
     $("#toplay").empty();
 
+    const size = "h4"
+
     if (white) {
-      $(`<p>White to play</p>`).appendTo($("#toplay"));
+      $(`<p class="${size}">${_("white_to_play")}</p>`).appendTo($("#toplay"));
     } else {
-      $(`<p>Black to play</p>`).appendTo($("#toplay"));
+      $(`<p class="${size}">${_("black_to_play")}</p>`).appendTo($("#toplay"));
     }
 
     const buttonsclass = "btn btn-small btn-block";
@@ -329,13 +328,13 @@ const OpeningTree = class OpeningTree {
         .on("click", clickHandler);
     };
 
-    button(topbuttons, "Back", otherbuttonscss, () => {
+    button(topbuttons, _("back"), otherbuttonscss, () => {
       this.backonemove();
     });
-    button(topbuttons, "Reset", otherbuttonscss, () => {
+    button(topbuttons, _("reset"), otherbuttonscss, () => {
       this.resetboard();
     });
-    button(topbuttons, "Switch", otherbuttonscss, () => {
+    button(topbuttons, _("switch"), otherbuttonscss, () => {
       this.switchboard();
     });
 
@@ -350,7 +349,7 @@ const OpeningTree = class OpeningTree {
       );
     });
 
-    button(movesdiv, "See on chess.com", chessbuttonscolorclass, () => {
+    button(movesdiv, _("chess_com"), chessbuttonscolorclass, () => {
       window
         .open(
           CHESS_COM_URI +
@@ -415,25 +414,30 @@ const OpeningTree = class OpeningTree {
 
 // ========================================
 // Helper functions
-const __log = function (level, strings) {
+
+function _(messageid) {
+  return messages[currentlang][messageid];
+}
+
+function __log(level, strings) {
   console.log("[" + level + "] " + strings.join(" / "));
-};
+}
 
-const log = function (...args) {
+function log(...args) {
   __log("INFO", args);
-};
+}
 
-const debug = function (...args) {
-  if ( DEBUG ){
+function debug(...args) {
+  if (DEBUG) {
     __log("DEBUG", args);
   }
-};
+}
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const readOneFile = function (e, readerfunction) {
+function readOneFile(e, readerfunction) {
   const file = e.target.files[0];
   if (!file) {
     return;
@@ -446,48 +450,84 @@ const readOneFile = function (e, readerfunction) {
     readerfunction(contents);
   };
   reader.readAsText(file);
-};
+}
 
-const parsePGNfile = (content, updateuri = true) => {
+function parsePGNfile(content, updateuri = true) {
   if (currentTree) {
     currentTree.board.destroy();
   }
   currentTree = new OpeningTree(content, updateuri);
-};
+}
+
+function setlang(lang){
+  if ( lang != currentlang && lang in messages ){
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("lang", lang);
+    
+    window.location.href = location.protocol + '//' + location.host + location.pathname + '?' + urlParams.toString();
+  }
+}
 
 // ========================================
 // DOM interactions
-$(document).on("change", "#pgnupload", function (e) {
-  readOneFile(e, parsePGNfile);
-  $("#pgnupload").value = null;
-});
-
-$("#pgndownloadlink").on("click", function () {
-  const blob = new Blob([currentTree.content], {
-    type: "application/vnd.chess-pgn, application/x-chess-pgn",
-  });
-  saveAs(blob, "openings.pgn");
-});
-
-$("#pgnuploadlink").on("click", function () {
-  $("#pgnupload").trigger("click");
-});
-
-const loadfromuri = () => {
-  // load the content from the uri
+function onload() {
   const urlParams = new URLSearchParams(window.location.search);
 
   const content = urlParams.get("content");
+  const lang = urlParams.get("lang") || navigator.language || "en";
+
+  currentlang = lang.slice(0,2); 
+  if ( messages[currentlang] === undefined){
+    currentlang = "en";
+  }
+
+  $(document).on("change", "#pgnupload", function (e) {
+    readOneFile(e, parsePGNfile);
+    $("#pgnupload").value = null;
+  });
+
+  $("#pgndownloadlink").on("click", function () {
+    const blob = new Blob([currentTree.content], {
+      type: "application/vnd.chess-pgn, application/x-chess-pgn",
+    });
+    saveAs(blob, "openings.pgn");
+  });
+
+  $("#pgnuploadlink").on("click", function () {
+    $("#pgnupload").trigger("click");
+  });
+
+  $("#flag-fr").on("click", () => {
+    setlang("fr");
+  })
+
+  $("#flag-us").on("click", () => {
+    setlang("en");
+  })
+
+  const setMessage = (messageId) => {    
+    $("#"+messageId).html(_(messageId));
+    debug("Setting message", messageId, $(messageId), _(messageId));
+  }
+
+  setMessage("title");
+  setMessage("pgnuploadlink");
+  setMessage("pgndownloadlink");
+  setMessage("help_text");  
+
+  let loaded = false;
 
   if (content) {
     const uncompressed = LZString.decompressFromEncodedURIComponent(content);
     if (uncompressed) {
       parsePGNfile(uncompressed, false);
-      return;
+      loaded = true;
     }
   }
 
-  parsePGNfile(DEFAULT, false);
-};
+  if ( ! loaded ) {
+    parsePGNfile(DEFAULT, false);
+  } 
+}
 
-loadfromuri();
+onload();

@@ -42,6 +42,11 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
+            src: "flags/*",
+            dest: "dist/",            
+          },
+          {
+            expand: true,
             src: "build/*.min.js",
             // src: "src/<%= pkg.name %>.js",
             dest: "dist/",
@@ -49,7 +54,7 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
-            src: "src/index.html",
+            src: ["src/index.html", "src/messages.js"],
             dest: "dist/",
             flatten: true,
           },
