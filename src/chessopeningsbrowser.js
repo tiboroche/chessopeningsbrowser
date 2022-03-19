@@ -142,7 +142,7 @@ const OpeningTree = class OpeningTree {
 
     // make the first move if only one
     const onlysucc = this.currentMove.onlysuccessor();
-    if (onlysuc && OPTIONS.fast_forward) {
+    if (onlysucc && OPTIONS.fast_forward) {
       this.makemove(onlysucc);
     } else {
       this.displaymoves();
