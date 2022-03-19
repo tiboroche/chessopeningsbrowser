@@ -35,6 +35,10 @@ const BLACK_LETTERS = {
   R: "t",
 };
 
+const OPTIONS = {
+  "fast_forward" : false, // auto advance to next node
+}
+
 let currentTree = undefined;
 let currentlang = "en";
 
@@ -138,7 +142,7 @@ const OpeningTree = class OpeningTree {
 
     // make the first move if only one
     const onlysucc = this.currentMove.onlysuccessor();
-    if (onlysucc) {
+    if (onlysuc && OPTIONS.fast_forward) {
       this.makemove(onlysucc);
     } else {
       this.displaymoves();
@@ -397,7 +401,7 @@ const OpeningTree = class OpeningTree {
       await this.board.move(candidate);
       const next = candidate.onlysuccessor();
 
-      if (next) {
+      if (next && OPTIONS.fast_forward) {
         this.showbreadcrumb(this.history(candidate));
         await sleep(100);
         candidate = next;
