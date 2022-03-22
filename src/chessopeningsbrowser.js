@@ -483,7 +483,11 @@ function readOneFile(e, readerfunction) {
 
 function parsePGNfile(content, updateuri = true) {
   if (currentTree && currentTree.board) {
-    currentTree.board.destroy();
+    try{
+      currentTree.board.destroy();
+    }catch{
+      
+    }
   }
   currentTree = new OpeningTree(content, updateuri);
 }
