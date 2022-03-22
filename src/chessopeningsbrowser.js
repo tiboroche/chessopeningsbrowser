@@ -134,18 +134,28 @@ const OpeningTree = class OpeningTree {
     this.board = new Board(this.chess);
     this.gameslength = 0;
 
-    this.inittree(this.load());
+    let games = this.load();
 
-    if (updateuri) {
-      this.updateuri();
+    if ( ! games ) {
+      this.content = DEFAULT;
+      updateuri = false;
+      games = this.load();
     }
 
-    // make the first move if only one
-    const onlysucc = this.currentMove.onlysuccessor();
-    if (onlysucc && OPTIONS.fast_forward) {
-      this.makemove(onlysucc);
-    } else {
-      this.displaymoves();
+    if (games){
+      this.inittree(games);
+
+      if (updateuri) {
+        this.updateuri();
+      }
+
+      // make the first move if only one
+      const onlysucc = this.currentMove.onlysuccessor();
+      if (onlysucc && OPTIONS.fast_forward) {
+        this.makemove(onlysucc);
+      } else {
+        this.displaymoves();
+      }
     }
   }
 
@@ -169,14 +179,29 @@ const OpeningTree = class OpeningTree {
       games = pgnParser.parse(newcontent);
     } catch {
       alert(_("invalid_pgn"));
+      return undefined;
     }
 
-    // debug("games loaded", JSON.stringify(games));
-    log(`Loaded ${games.length} games.`);
+    if ( ! games ){
+      alert(_("invalid_pgn"));
+      return undefined;
+    }else{
 
-    this.gameslength = games.length;
+      const validgames = [];
+      games.forEach(function(game){
+        if ( game["headers"] && game["headers"]["Event"] != ""){
+          validgames.push(game);
+        }
+      });
 
-    return games;
+      debug("games loaded", JSON.stringify(validgames));
+      log(`Loaded ${validgames.length} games.`);
+
+      this.gameslength = validgames.length;
+
+      return validgames;
+    }
+
   }
 
   updateuri() {
@@ -457,7 +482,7 @@ function readOneFile(e, readerfunction) {
 }
 
 function parsePGNfile(content, updateuri = true) {
-  if (currentTree) {
+  if (currentTree && currentTree.board) {
     currentTree.board.destroy();
   }
   currentTree = new OpeningTree(content, updateuri);
