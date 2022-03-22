@@ -36,8 +36,8 @@ const BLACK_LETTERS = {
 };
 
 const OPTIONS = {
-  "fast_forward" : false, // auto advance to next node
-}
+  fast_forward: false, // auto advance to next node
+};
 
 let currentTree = undefined;
 let currentlang = "en";
@@ -136,13 +136,13 @@ const OpeningTree = class OpeningTree {
 
     let games = this.load();
 
-    if ( ! games ) {
+    if (!games) {
       this.content = DEFAULT;
       updateuri = false;
       games = this.load();
     }
 
-    if (games){
+    if (games) {
       this.inittree(games);
 
       if (updateuri) {
@@ -182,14 +182,13 @@ const OpeningTree = class OpeningTree {
       return undefined;
     }
 
-    if ( ! games ){
+    if (!games) {
       alert(_("invalid_pgn"));
       return undefined;
-    }else{
-
+    } else {
       const validgames = [];
-      games.forEach(function(game){
-        if ( game["headers"] && game["headers"]["Event"] != ""){
+      games.forEach(function (game) {
+        if (game["headers"] && game["headers"]["Event"] != "") {
           validgames.push(game);
         }
       });
@@ -201,7 +200,6 @@ const OpeningTree = class OpeningTree {
 
       return validgames;
     }
-
   }
 
   updateuri() {
@@ -287,7 +285,9 @@ const OpeningTree = class OpeningTree {
       if (move.openings.length == 1) {
         html += " [" + move.openings.join(",") + "]";
       } else {
-        html += ` [${move.openings[0]} ${_("and")} ${(move.openings.length - 1)} ${_("others")}]`;
+        html += ` [${move.openings[0]} ${_("and")} ${
+          move.openings.length - 1
+        } ${_("others")}]`;
       }
     }
 
@@ -332,7 +332,7 @@ const OpeningTree = class OpeningTree {
     movesdiv.empty();
     $("#toplay").empty();
 
-    const size = "h4"
+    const size = "h4";
 
     if (white) {
       $(`<p class="${size}">${_("white_to_play")}</p>`).appendTo($("#toplay"));
@@ -367,17 +367,6 @@ const OpeningTree = class OpeningTree {
       this.switchboard();
     });
 
-    this.currentMove.successors.forEach((move) => {
-      button(
-        $("#moves"),
-        this.santohtml(move, white, true),
-        buttonscolorclass,
-        () => {
-          currentTree.makemove(move);
-        }
-      );
-    });
-
     button(movesdiv, _("chess_com"), chessbuttonscolorclass, () => {
       window
         .open(
@@ -388,6 +377,17 @@ const OpeningTree = class OpeningTree {
           "_blank"
         )
         .focus();
+    });
+
+    this.currentMove.successors.forEach((move) => {
+      button(
+        $("#moves"),
+        this.santohtml(move, white, true),
+        buttonscolorclass,
+        () => {
+          currentTree.makemove(move, this.currentMove);
+        }
+      );
     });
   }
 
@@ -420,7 +420,14 @@ const OpeningTree = class OpeningTree {
   }
 
   async makemove(nextmove) {
+    debug("Making move : ", nextmove, this.currentMove);
+    if ( nextmove.predecessor != this.currentMove ){
+      // wrong initial state, probably a click too fast
+      return;
+    }
+
     let candidate = nextmove;
+    this.currentMove = candidate;
 
     while (true) {
       await this.board.move(candidate);
@@ -430,12 +437,12 @@ const OpeningTree = class OpeningTree {
         this.showbreadcrumb(this.history(candidate));
         await sleep(100);
         candidate = next;
+        this.currentMove = candidate;
       } else {
         break;
       }
     }
 
-    this.currentMove = candidate;
     this.displaymoves();
     return;
   }
@@ -483,21 +490,25 @@ function readOneFile(e, readerfunction) {
 
 function parsePGNfile(content, updateuri = true) {
   if (currentTree && currentTree.board) {
-    try{
+    try {
       currentTree.board.destroy();
-    }catch{
-      
-    }
+    } catch {}
   }
   currentTree = new OpeningTree(content, updateuri);
 }
 
-function setlang(lang){
-  if ( lang != currentlang && lang in messages ){
+function setlang(lang) {
+  if (lang != currentlang && lang in messages) {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set("lang", lang);
-    
-    window.location.href = location.protocol + '//' + location.host + location.pathname + '?' + urlParams.toString();
+
+    window.location.href =
+      location.protocol +
+      "//" +
+      location.host +
+      location.pathname +
+      "?" +
+      urlParams.toString();
   }
 }
 
@@ -509,8 +520,8 @@ function onload() {
   const content = urlParams.get("content");
   const lang = urlParams.get("lang") || navigator.language || "en";
 
-  currentlang = lang.slice(0,2); 
-  if ( messages[currentlang] === undefined){
+  currentlang = lang.slice(0, 2);
+  if (messages[currentlang] === undefined) {
     currentlang = "en";
   }
 
@@ -532,21 +543,21 @@ function onload() {
 
   $("#flag-fr").on("click", () => {
     setlang("fr");
-  })
+  });
 
   $("#flag-us").on("click", () => {
     setlang("en");
-  })
+  });
 
-  const setMessage = (messageId) => {    
-    $("#"+messageId).html(_(messageId));
+  const setMessage = (messageId) => {
+    $("#" + messageId).html(_(messageId));
     debug("Setting message", messageId, $(messageId), _(messageId));
-  }
+  };
 
   setMessage("title");
   setMessage("pgnuploadlink");
   setMessage("pgndownloadlink");
-  setMessage("help_text");  
+  setMessage("help_text");
 
   let loaded = false;
 
@@ -558,9 +569,9 @@ function onload() {
     }
   }
 
-  if ( ! loaded ) {
+  if (!loaded) {
     parsePGNfile(DEFAULT, false);
-  } 
+  }
 }
 
 onload();
