@@ -1,6 +1,6 @@
 // import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
 
-import { Chessground } from "./chessground/Chessground.js";
+import { Chessground } from "./chessground/chessground.js";
 import * as fen from "./chessground/fen.js";
 
 import { messages } from "./messages.js";
@@ -472,7 +472,7 @@ function parse(content) {
     str = str.trim();
     if (str) {
       debug("Loading ", str);
-      const valid = chess.load_pgn(str);
+      const valid = chess.load_pgn(str, { sloppy: true});
       debug("Got ", valid);
 
       if (valid) {
