@@ -1,7 +1,7 @@
 // import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
 
 import { Chessground } from "./chessground/Chessground.js";
-import * as fen from './chessground/fen.js';
+import * as fen from "./chessground/fen.js";
 
 import { messages } from "./messages.js";
 
@@ -61,7 +61,7 @@ const Board = class Board {
   }
 
   reset() {
-    this.board.set({fen: fen.initial})
+    this.board.set({ fen: fen.initial });
   }
 
   switch() {
@@ -69,17 +69,15 @@ const Board = class Board {
   }
 
   setPosition(fen) {
-    this.board.set({fen: fen});
+    this.board.set({ fen: fen });
   }
 
-  markmove(move){
+  markmove(move) {}
 
-  }
-
-  showmoves(moves){ 
-    const shapes = moves.map(function(move){ 
+  showmoves(moves) {
+    const shapes = moves.map(function (move) {
       debug("shape : ", move.san);
-      return { orig: move.from, dest: move.to, brush: 'green' }
+      return { orig: move.from, dest: move.to, brush: "green" };
     });
 
     debug("Drawing shapes", JSON.stringify(shapes));
@@ -175,27 +173,11 @@ const OpeningTree = class OpeningTree {
   }
 
   load() {
-    let games = [];
+    debug("Reading PGN ", this.content);
 
-    // add missing if needed
-    let newcontent = "";
-    this.content.split(/\r?\n/).forEach(function (line) {
-      line = line.trim();
-      newcontent += line;
-      if (line.startsWith("1.") && !line.endsWith("*")) {
-        newcontent += " *";
-      }
-      newcontent += "\n";
-    });
-
-    debug("Reading PGN ", newcontent);
-
-    try {
-      games = pgnParser.parse(newcontent);
-    } catch {
-      alert(_("invalid_pgn"));
-      return undefined;
-    }
+    const ret = parse(this.content);
+    const games = ret[0];
+    const errors = ret[1];
 
     if (!games) {
       alert(_("invalid_pgn"));
@@ -210,6 +192,12 @@ const OpeningTree = class OpeningTree {
 
       debug("games loaded", JSON.stringify(validgames));
       log(`Loaded ${validgames.length} games.`);
+      if (errors) {
+        log(`${errors.length} errors found in the file`);
+        errors.forEach(function(error){
+          log(error);
+        })
+      }
 
       this.gameslength = validgames.length;
 
@@ -228,27 +216,20 @@ const OpeningTree = class OpeningTree {
   }
 
   inittree(games) {
-    let gamename;
     const start = this.startMove;
     games.forEach(function (game) {
-      // get the name of the game, the Event header
-      for (let i = 0; i < game["headers"].length; i++) {
-        const header = game["headers"][i];
-        if (header["name"] === "Event") {
-          gamename = header["value"];
-          break;
-        }
-      }
+      const gamename = game["headers"]["Event"];
 
       let curMove = start;
       const localchess = new Chess();
 
       game.moves.forEach(function (move) {
         let found = false;
-        const chessmove = localchess.move(move["move"]);
+        const movesan = move;
+        const chessmove = localchess.move(movesan);
         for (let j = 0; j < curMove.successors.length; j++) {
           const next = curMove.successors[j];
-          if (next.san === move["move"]) {
+          if (next.san === movesan) {
             // found !
             curMove = next;
             found = true;
@@ -257,7 +238,7 @@ const OpeningTree = class OpeningTree {
         }
         // not found create a new node
         if (!found) {
-          const next = new Move(move["move"]);
+          const next = new Move(movesan);
           next.from = chessmove["from"];
           next.to = chessmove["to"];
           curMove.successors.push(next);
@@ -266,11 +247,15 @@ const OpeningTree = class OpeningTree {
           curMove = next;
         }
 
-        curMove.openings.push(gamename);
-        const comments = move["comments"];
-        if (comments && comments.length > 0) {
-          curMove.comment = comments[0]["text"];
+        // find the comment
+        for (let i = 0; i < game["comments"].length; i++) {
+          const comment = game["comments"][i];
+          if (comment["fen"] === localchess.fen()) {
+            curMove.comment = comment["comment"];
+          }
         }
+
+        curMove.openings.push(gamename);
       });
     });
   }
@@ -469,6 +454,60 @@ const OpeningTree = class OpeningTree {
     return;
   }
 };
+
+// ========================================
+// PGN parsing
+
+function parse(content) {
+  const games = [];
+  const errors = [];
+  const chess = new Chess();
+
+  content = content.replaceAll("[Event", "~[Event");
+  const rawgames = content.split("~");
+
+  debug("rawgames", rawgames);
+
+  const parseonegame = function (str) {
+    str = str.trim();
+    if (str) {
+      debug("Loading ", str);
+      const valid = chess.load_pgn(str);
+      debug("Got ", valid);
+
+      if (valid) {
+        const game = {};
+        game["headers"] = chess.header();
+        game["moves"] = chess.history();
+        game["comments"] = chess.get_comments();
+        return game;
+      } else {
+        const header = chess.header();
+        if ( header){
+          return `${header["Event"]} is invalid.`
+        }
+        return "Invalid game found.";
+      }
+    }
+  };
+
+  rawgames.forEach(function (content) {
+    if (content) {
+      const parsed = parseonegame(content);
+      if (parsed) {
+        if (typeof parsed === "string") {
+          errors.push(parsed);
+        } else {
+          games.push(parsed);
+        }
+      }
+    }
+  });
+
+  debug("Return ", games, errors);
+
+  return [games, errors];
+}
 
 // ========================================
 // Helper functions
