@@ -28,10 +28,19 @@ module.exports = function (grunt) {
               "pgn-parser/dist/pgn-parser.js",
               "pgn-parser/dist/pgn-parser.js.map",
               "lz-string/libs/lz-string.js",
-              "cm-chessboard/src/cm-chessboard/*.js",
               "file-saver/dist/*.min.js*",
             ],
             dest: "dist/",
+            flatten: true,
+          },
+          {
+            expand: true,
+            cwd: "node_modules/",
+            src: [
+              "chessground/*.js",
+              "chessground/*.js.map",
+            ],
+            dest: "dist/chessground",
             flatten: true,
           },
           {
@@ -60,7 +69,7 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
-            cwd: "node_modules/cm-chessboard",
+            cwd: "node_modules/chessground",
             src: "assets/**",
             dest: "dist/",
           },
@@ -82,6 +91,9 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks("grunt-shell");
 
   // Default task(s).
-  // grunt.registerTask("default", ["clean", "copy", "uglify"]);
-  grunt.registerTask("default", ["clean", "uglify", "copy", "shell:insert_ga"]);
+  if ( process.platform == "linux" ){
+    grunt.registerTask("default", ["clean", "uglify", "copy", "shell:insert_ga"]);
+  }else{
+    grunt.registerTask("default", ["clean", "uglify", "copy"]);
+  }
 };

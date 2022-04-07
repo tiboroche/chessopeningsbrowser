@@ -1,4 +1,8 @@
-import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
+// import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
+
+import { Chessground } from "./chessground/Chessground.js";
+import * as fen from './chessground/fen.js';
+
 import { messages } from "./messages.js";
 
 const DEBUG = document.location.host.startsWith("localhost");
@@ -45,34 +49,42 @@ let currentlang = "en";
 // functions related to the board display
 const Board = class Board {
   constructor(chess) {
-    this.board = new Chessboard(document.getElementById("board1"), {
-      position: "start",
-    });
+    const config = {
+      viewOnly: true,
+    };
+
+    // eslint-disable-next-line new-cap
+    const ground = Chessground(document.getElementById("board1"), config);
+
+    this.board = ground;
     this.chess = chess;
   }
 
   reset() {
-    this.board.removeMarkers();
-    this.board.setPosition("start");
+    this.board.set({fen: fen.initial})
   }
 
   switch() {
-    if (this.board.getOrientation() == COLOR.white) {
-      this.board.setOrientation(COLOR.black);
-    } else {
-      this.board.setOrientation(COLOR.white);
-    }
+    this.board.toggleOrientation();
   }
 
   setPosition(fen) {
-    this.board.removeMarkers();
-    this.board.setPosition(fen);
+    this.board.set({fen: fen});
   }
 
-  markmove(chessmove) {
-    this.board.removeMarkers();
-    this.board.addMarker(chessmove["from"], MARKER_TYPE.frame);
-    this.board.addMarker(chessmove["to"], MARKER_TYPE.frame);
+  markmove(move){
+
+  }
+
+  showmoves(moves){ 
+    const shapes = moves.map(function(move){ 
+      debug("shape : ", move.san);
+      return { orig: move.from, dest: move.to, brush: 'green' }
+    });
+
+    debug("Drawing shapes", JSON.stringify(shapes));
+
+    this.board.setShapes(shapes);
   }
 
   move(move) {
@@ -82,9 +94,8 @@ const Board = class Board {
 
     debug("Making move", move.san, this.chess.ascii(), chessmove);
     if (chessmove) {
-      this.markmove(chessmove);
-      const ret = this.board.movePiece(chessmove["from"], chessmove["to"]);
-      this.board.setPosition(this.chess.fen())
+      const ret = this.board.move(chessmove["from"], chessmove["to"]);
+      this.setPosition(this.chess.fen());
       return ret;
     } else {
       alert(_("invalid_move"));
@@ -103,6 +114,8 @@ const Move = class Move {
   openings;
   successors;
   chessmove;
+  from;
+  to;
 
   constructor(san) {
     this.san = san;
@@ -228,8 +241,11 @@ const OpeningTree = class OpeningTree {
       }
 
       let curMove = start;
+      const localchess = new Chess();
+
       game.moves.forEach(function (move) {
         let found = false;
+        const chessmove = localchess.move(move["move"]);
         for (let j = 0; j < curMove.successors.length; j++) {
           const next = curMove.successors[j];
           if (next.san === move["move"]) {
@@ -242,6 +258,8 @@ const OpeningTree = class OpeningTree {
         // not found create a new node
         if (!found) {
           const next = new Move(move["move"]);
+          next.from = chessmove["from"];
+          next.to = chessmove["to"];
           curMove.successors.push(next);
           next.predecessor = curMove;
           // debug("New move from", JSON.stringify(move), curMove, next);
@@ -391,6 +409,8 @@ const OpeningTree = class OpeningTree {
         }
       );
     });
+
+    this.board.showmoves(this.currentMove.successors);
   }
 
   backonemove() {
@@ -423,7 +443,7 @@ const OpeningTree = class OpeningTree {
 
   async makemove(nextmove) {
     debug("Making move : ", nextmove, this.currentMove);
-    if ( nextmove.predecessor != this.currentMove ){
+    if (nextmove.predecessor != this.currentMove) {
       // wrong initial state, probably a click too fast
       return;
     }
