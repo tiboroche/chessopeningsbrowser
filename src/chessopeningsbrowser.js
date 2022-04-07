@@ -83,9 +83,11 @@ const Board = class Board {
     debug("Making move", move.san, this.chess.ascii(), chessmove);
     if (chessmove) {
       this.markmove(chessmove);
-      return this.board.movePiece(chessmove["from"], chessmove["to"]);
+      const ret = this.board.movePiece(chessmove["from"], chessmove["to"]);
+      this.board.setPosition(this.chess.fen())
+      return ret;
     } else {
-      alert(_("invalid_mode"));
+      alert(_("invalid_move"));
     }
   }
 
