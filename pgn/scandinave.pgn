@@ -1,0 +1,39 @@
+[Event "Scandinave idéale"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. Nf3 Nc6 5. d4 Bg4 6. Be2 O-O-O *
+
+[Event "Scandinave piège pour les noirs"]
+
+1. e4 d5 2. exd5 Qxd5 3. Nc3 Qa5 4. d4 Nf6 5. Bd2 {Attention à l'attaque à la découverte sur la Dame !} Nc6 {Surtout à ne pas jouer ! Protéger par c6 à la place} 6. Bb5 Bd7 *
+
+[Event "Scandinave variante portugaise"]
+
+1. e4 d5 2. exd5 Nf6 3. d4 Bg4 4. Nf3 Qxd5 5. Nc3 Qf5 *
+
+[Event "Scandinave prise refusée / échange des dames"]
+
+1. e4 d5 2. d3 dxe4 3. dxe4 Qxd1+ {Echange des dames pour déroquer le roi} 4. Kxd1 f5 5. exf5 Bxf5 {Pression sur c2} 6. Nc3 Nc6 7. Bb5 O-O-O+ *
+
+[Event "Scandinave prise refusée"]
+
+1. e4 d5 2. Nc3 dxe4 3. Nxe4 Bf5 4. Ng3 Bg6 5. Nf3 Nd7 {Intéressant pour ne pas bloquer c5} *
+
+[Event "Scandinave prise refusée + e5"]
+
+1. e4 d5 2. e5 c5 3. Nf3 Bg4 *
+
+[Event "Scandinave protection Cf6"]
+
+1. e4 d5 2. exd5 Nf6 3. c4 c6 4. dxc6 Nxc6 5. Nf3 e5 {Grosse pression sur le cavalier f3} 6. Nc3 e4 7. Ng5 Bf5 8. Qe2 Nd4 {Menace la dame et la fourchette en c2} *
+
+[Event "Scandinave protection Cf6 variante"]
+
+1. e4 d5 2. exd5 Nf6 3. c4 c6 4. dxc6 Nxc6 5. Nf3 e5 6. d3 e4 7. dxe4 Qxd1+ {Echange des dames pour déroquer} 8. Kxd1 Nxe4 *
+
+[Event "Scandinave fianchetto"]
+
+1. e4 d5 2. exd5 Nf6 3. Nf3 Nxd5 4. d4 g6 {Pour prépaper le fou en g7 (fianchetto)} 5. c4 Nb6 6. Nc3 Bg7 7. Be2 O-O 8. O-O Bg4 {Attention à Fxb7 en cas d'échange des fous en f3} *
+
+[Event "Scandinave fianchetto après échange des cavaliers"]
+
+1. e4 d5 2. exd5 Nf6 3. d4 Nxd5 4. Nc3 Nxc3 5. bxc3 g6 6. Nf3 Bg7 7. Bc4 O-O 8. O-O c5 {Les blancs ne doivent pas reprendre le pion (affaiblissement de la structure)} *
