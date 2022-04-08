@@ -61,6 +61,7 @@ const Board = class Board {
   }
 
   reset() {
+    this.board.state.lastMove = undefined;
     this.board.set({ fen: fen.initial });
   }
 
@@ -72,7 +73,9 @@ const Board = class Board {
     this.board.set({ fen: fen });
   }
 
-  markmove(move) {}
+  markmove(move) {
+    this.board.state.lastMove = [move.from, move.to];
+  }
 
   showmoves(moves) {
     const shapes = moves.map(function (move) {
