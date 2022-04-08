@@ -79,7 +79,6 @@ const Board = class Board {
 
   showmoves(moves) {
     const shapes = moves.map(function (move) {
-      debug("shape : ", move.san);
       return { orig: move.from, dest: move.to, brush: "green" };
     });
 
@@ -149,6 +148,7 @@ const OpeningTree = class OpeningTree {
     this.chess = new Chess();
     this.board = new Board(this.chess);
     this.gameslength = 0;
+    this.errors = undefined;
 
     let games = this.load();
 
@@ -195,11 +195,12 @@ const OpeningTree = class OpeningTree {
 
       debug("games loaded", JSON.stringify(validgames));
       log(`Loaded ${validgames.length} games.`);
-      if (errors) {
+      if (errors.length) {
         log(`${errors.length} errors found in the file`);
-        errors.forEach(function(error){
+        errors.forEach(function (error) {
           log(error);
-        })
+        });
+        this.errors = errors;
       }
 
       this.gameslength = validgames.length;
@@ -215,7 +216,15 @@ const OpeningTree = class OpeningTree {
 
     window.history.pushState(undefined, "", url);
 
-    alert(`${this.gameslength} ${_("loaded")}`);
+    let message = `${this.gameslength} ${_("loaded")}`;
+
+    debug("Errors found : ", this.errors);
+
+    if (this.errors) {
+      message += `\n\n${_("errors_found")}\n` + this.errors.join("\n");
+    }
+
+    alert(message);
   }
 
   inittree(games) {
@@ -475,7 +484,7 @@ function parse(content) {
     str = str.trim();
     if (str) {
       debug("Loading ", str);
-      const valid = chess.load_pgn(str, { sloppy: true});
+      const valid = chess.load_pgn(str, { sloppy: true });
       debug("Got ", valid);
 
       if (valid) {
@@ -486,8 +495,8 @@ function parse(content) {
         return game;
       } else {
         const header = chess.header();
-        if ( header){
-          return `${header["Event"]} is invalid.`
+        if (header) {
+          return `${header["Event"]} is invalid.`;
         }
         return "Invalid game found.";
       }
