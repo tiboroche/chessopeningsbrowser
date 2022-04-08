@@ -10,7 +10,6 @@ The code uses the following JS libraries :
 
 - [chess.js](https://github.com/jhlywa/chess.js/)
 - [chessground](https://github.com/lichess-org/chessground)
-- [FileSave.js](https://github.com/eligrey/FileSaver.js/)
 - [lz-string](https://github.com/pieroxy/lz-string/)
 
 And the frameworks [jQuery](https://jquery.com/) and [Bootstrap](https://getbootstrap.com/)

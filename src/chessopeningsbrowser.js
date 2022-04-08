@@ -1,5 +1,3 @@
-// import { Chessboard, MARKER_TYPE, COLOR } from "./Chessboard.js";
-
 import { Chessground } from "./chessground/chessground.js";
 import * as fen from "./chessground/fen.js";
 
