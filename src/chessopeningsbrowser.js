@@ -8,6 +8,7 @@ import { messages } from "./messages.js";
 const DEBUG = document.location.host.startsWith("localhost");
 
 const CHESS_COM_URI = "https://chess.com/explorer?moveList=";
+const LICHESS_ORG_URI = "https://lichess.org/analysis/";
 
 const DEFAULT = `
 [Event "Italian"]
@@ -194,9 +195,9 @@ const OpeningTree = class OpeningTree {
       log(`Loaded ${validgames.length} games.`);
       if (errors) {
         log(`${errors.length} errors found in the file`);
-        errors.forEach(function(error){
+        errors.forEach(function (error) {
           log(error);
-        })
+        });
       }
 
       this.gameslength = validgames.length;
@@ -351,6 +352,7 @@ const OpeningTree = class OpeningTree {
       (white ? "btn-outline-secondary" : "btn-outline-dark") + " m-1";
     const otherbuttonscss = "btn-secondary m-1";
     const chessbuttonscolorclass = "btn-success m-1";
+    const lichessbuttonscolorclass = "btn-dark m-1";
 
     const topbuttons = $(
       '<div class="btn-group btn-group-sm" role="group" ></div>'
@@ -382,6 +384,10 @@ const OpeningTree = class OpeningTree {
           "_blank"
         )
         .focus();
+    });
+
+    button(movesdiv, _("lichess_org"), lichessbuttonscolorclass, () => {
+      window.open(LICHESS_ORG_URI + this.chess.fen(), "_blank").focus();
     });
 
     this.currentMove.successors.forEach((move) => {
@@ -472,7 +478,7 @@ function parse(content) {
     str = str.trim();
     if (str) {
       debug("Loading ", str);
-      const valid = chess.load_pgn(str, { sloppy: true});
+      const valid = chess.load_pgn(str, { sloppy: true });
       debug("Got ", valid);
 
       if (valid) {
@@ -483,8 +489,8 @@ function parse(content) {
         return game;
       } else {
         const header = chess.header();
-        if ( header){
-          return `${header["Event"]} is invalid.`
+        if (header) {
+          return `${header["Event"]} is invalid.`;
         }
         return "Invalid game found.";
       }
