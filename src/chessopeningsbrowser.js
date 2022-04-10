@@ -1,6 +1,3 @@
-import { Chessground } from "./chessground/chessground.js";
-import * as fen from "./chessground/fen.js";
-
 import { messages } from "./messages.js";
 
 const DEBUG = document.location.host.startsWith("localhost");
@@ -61,7 +58,7 @@ const Board = class Board {
 
   reset() {
     this.board.state.lastMove = undefined;
-    this.board.set({ fen: fen.initial });
+    this.board.set({ fen: "start" });
   }
 
   switch() {

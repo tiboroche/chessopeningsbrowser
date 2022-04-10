@@ -16,6 +16,10 @@ module.exports = function (grunt) {
         src: "node_modules/chess.js/chess.js",
         dest: "build/chess.min.js",
       },
+      lzstring: {
+        src: "node_modules/lz-string/libs/lz-string.js",
+        dest: "build/lz-string.min.js",
+      },
     },
     copy: {
       main: {
@@ -23,21 +27,15 @@ module.exports = function (grunt) {
           {
             expand: true,
             cwd: "node_modules/",
-            src: [
-              "jquery/dist/jquery.min.js",
-              "lz-string/libs/lz-string.js",
-            ],
+            src: ["jquery/dist/jquery.min.js"],
             dest: "dist/",
             flatten: true,
           },
           {
             expand: true,
             cwd: "node_modules/",
-            src: [
-              "chessground/*.js",
-              "chessground/*.js.map",
-            ],
-            dest: "dist/chessground",
+            src: ["chessground/dist/*.min.js"],
+            dest: "dist/",
             flatten: true,
           },
           {
@@ -49,7 +47,7 @@ module.exports = function (grunt) {
           {
             expand: true,
             src: "flags/*",
-            dest: "dist/",            
+            dest: "dist/",
           },
           {
             expand: true,
@@ -66,6 +64,12 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
+            src: "bootstrap/bootstrap.min.css",
+            dest: "dist/assets/",
+            flatten: true,
+          },
+          {
+            expand: true,
             cwd: "node_modules/chessground",
             src: "assets/**",
             dest: "dist/",
@@ -75,10 +79,11 @@ module.exports = function (grunt) {
     },
     clean: ["dist/"],
     shell: {
-      insert_ga : {
-        command: 'sed -e "/____GOOGLE_ANALYTICS____/{" -e "r./ga.js" -e "d" -e "}" -i dist/index.html'
-      }
-    }
+      insert_ga: {
+        command:
+          'sed -e "/____GOOGLE_ANALYTICS____/{" -e "r./ga.js" -e "d" -e "}" -i dist/index.html',
+      },
+    },
   });
 
   // Load the plugin that provides the "uglify" task.
@@ -88,9 +93,14 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks("grunt-shell");
 
   // Default task(s).
-  if ( process.platform == "linux" ){
-    grunt.registerTask("default", ["clean", "uglify", "copy", "shell:insert_ga"]);
-  }else{
+  if (process.platform == "linux") {
+    grunt.registerTask("default", [
+      "clean",
+      "uglify",
+      "copy",
+      "shell:insert_ga",
+    ]);
+  } else {
     grunt.registerTask("default", ["clean", "uglify", "copy"]);
   }
 };
