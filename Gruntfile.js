@@ -25,10 +25,7 @@ module.exports = function (grunt) {
             cwd: "node_modules/",
             src: [
               "jquery/dist/jquery.min.js",
-              "pgn-parser/dist/pgn-parser.js",
-              "pgn-parser/dist/pgn-parser.js.map",
               "lz-string/libs/lz-string.js",
-              "file-saver/dist/*.min.js*",
             ],
             dest: "dist/",
             flatten: true,

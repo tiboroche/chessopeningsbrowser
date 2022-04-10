@@ -30,6 +30,7 @@ const messagesfr = {
 
     <p>Le code est entièrement exécuté dans le navigateur, le fichier PGN n'est pas envoyé au serveur et n'est pas collecté. Vous pouvez consulter le code sur <a href="https://github.com/tiboroche/chessopeningsbrowser" target="_blank">Github.</a></p>    
     `,
+    errors_found: "Les erreurs suivantes ont été trouvées dans le fichier PGN : "
 };
 
 const messagesen = {
@@ -64,6 +65,7 @@ const messagesen = {
   <p>All the code is ran on the browser, the PGN file is not sent back to the server and not collected. You can check the code on <a href="https://github.com/tiboroche/chessopeningsbrowser" target="_blank">Github.</a></p>
 
     `,
+    errors_found: "The following errors have been found in the PGN file : "
 };
 
 export const messages = { fr: messagesfr, en: messagesen };
