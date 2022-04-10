@@ -21,6 +21,7 @@ const messagesfr = {
     <p> Mode d'emploi : 
       <ul>
         <li>Créer un fichier PGN avec une partie par ouverture. Vous pouvez ajouter des commentaires entre {} après les coups. Le titre de l'ouverture doit être dans le header Event. Vous pouvez cliquer sur "Télécharger le PGN courant" pour récupérer le fichier d'exemple.</li>
+        <li>Le plus simple pour créer le PGN est d'utiliser les explorateurs de <a href="https://www.chess.com/explorer" target="blank_">chess.com</a> ou de <a href="https://lichess.org/analysis#explorer" target="blank_">lichess.org</a>.</li>
         <li>Charger votre fichier avec le bouton "Charger un nouveau fichier PGN". Vous pouvez alors naviguer dans les ouvertures à l'aide des boutons à droite de l'échiquier.</li>                
         <li>Vous pouvez ensuite créer un signet de l'adresse mise à jour après le chargement pour accéder directement au fichier sans avoir à le charger à chaque fois.</li>        
       </ul>
@@ -53,6 +54,8 @@ const messagesen = {
   <p> How to use : 
     <ul>
       <li>Create a PGN file with one game per opening you want to add. You can add comments between {} after the moves. The title of the opening must be in the Event header. You can click the "Download current PGN file" to get an example.</li>
+      <li>The simplest way to get the PGN is to use the explorers from <a href="https://www.chess.com/explorer" target="blank_">chess.com</a> or <a href="https://lichess.org/analysis#explorer" target="blank_">lichess.org</a>.</li>
+
       <li>Upload your file using the "Upload new PGN file" button. You can then explore your openings with the buttons on the right of the chessboard.</li>
       <li>You can bookmark the URI after your upload to access your file directly without uploading it everytime.</li>
     </ul>
