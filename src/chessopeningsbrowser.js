@@ -485,7 +485,7 @@ function parse(content) {
     str = str.trim();
     if (str) {
       debug("Loading ", str);
-      const valid = chess.load_pgn(str, { sloppy: true });
+      const valid = chess.load_pgn(str);
       debug("Got ", valid);
 
       if (valid) {
