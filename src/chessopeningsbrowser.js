@@ -559,7 +559,7 @@ function readOneFile(e, readerfunction) {
     const contents = e.target.result;
     readerfunction(contents);
   };
-  reader.readAsText(file);
+  reader.readAsText(file);  
 }
 
 function parsePGNfile(content, updateuri = true) {
@@ -601,7 +601,7 @@ function onload() {
 
   $(document).on("change", "#pgnupload", function (e) {
     readOneFile(e, parsePGNfile);
-    $("#pgnupload").value = null;
+    $("#pgnupload").val("");
   });
 
   $("#pgndownloadlink").on("click", function () {
