@@ -221,7 +221,9 @@ const OpeningTree = class OpeningTree {
       message += `\n\n${_("errors_found")}\n` + this.errors.join("\n");
     }
 
-    alert(message);
+    $("#upload_result_text").html(message);
+    $("#upload_result").modal('show');
+
   }
 
   inittree(games) {
@@ -646,6 +648,8 @@ function onload() {
   setMessage("pgnuploadlink");
   setMessage("pgndownloadlink");
   setMessage("help_text");
+  setMessage("upload_result_title");
+  setMessage("upload_result_close");
 
   let loaded = false;
 

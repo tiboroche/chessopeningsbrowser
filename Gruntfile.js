@@ -51,7 +51,7 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
-            src: "build/*.min.js",
+            src: ["build/*.min.js", "bootstrap/*.min.js"],
             // src: "src/<%= pkg.name %>.js",
             dest: "dist/",
             flatten: true,
