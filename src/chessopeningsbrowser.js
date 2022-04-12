@@ -73,9 +73,10 @@ const Board = class Board {
     this.board.state.lastMove = [move.from, move.to];
   }
 
-  showmoves(moves) {
+  showmoves(moves, hightlight= undefined) {
     const shapes = moves.map(function (move) {
-      return { orig: move.from, dest: move.to, brush: "green" };
+      const brush = move == hightlight ? "yellow" : "green"; 
+      return { orig: move.from, dest: move.to, brush: brush };
     });
 
     debug("Drawing shapes", JSON.stringify(shapes));
@@ -365,10 +366,17 @@ const OpeningTree = class OpeningTree {
       '<div class="btn-group btn-group-sm" role="group" ></div>'
     ).appendTo(movesdiv);
 
-    const button = (to, text, cssclass, clickHandler) => {
-      $(`<button class="${buttonsclass} ${cssclass}">${text}</button>`)
+    const button = (to, text, cssclass, clickHandler, mousenter=undefined, mouseleave=undefined) => {
+      const button = $(`<button class="${buttonsclass} ${cssclass}">${text}</button>`)
         .appendTo(to)
         .on("click", clickHandler);
+        if (mousenter){
+          button.on("mouseover", mousenter);
+        }
+        if (mouseleave){
+          button.on("mouseleave", mouseleave);
+        }
+
     };
 
     button(topbuttons, _("back"), otherbuttonscss, () => {
@@ -404,7 +412,13 @@ const OpeningTree = class OpeningTree {
         buttonscolorclass,
         () => {
           currentTree.makemove(move, this.currentMove);
-        }
+        },
+        () => {
+          this.board.showmoves(this.currentMove.successors, move);
+        },
+        () => {
+          this.board.showmoves(this.currentMove.successors);
+        },
       );
     });
 
