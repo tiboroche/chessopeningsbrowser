@@ -12,6 +12,7 @@ The code uses the following JS libraries :
 - [chessground](https://github.com/lichess-org/chessground)
 - [lz-string](https://github.com/pieroxy/lz-string/)
 - [FileSaver.js](https://github.com/eligrey/FileSaver.js/)
+- [pgn-parser](https://github.com/kevinludwig/pgn-parser)
 
 And the frameworks [jQuery](https://jquery.com/) and [Bootstrap](https://getbootstrap.com/)
 
