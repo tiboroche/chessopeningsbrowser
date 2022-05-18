@@ -41,34 +41,36 @@
 </head>
 
 <body>
-  <div class="container p-3" style="width: 1000px;">
+  <div class="container p-3" >
     <div class="row">
       <div class="col">
-        <h1 class="text-center" id="title"></h1>
+        <h1 class="text-center">
+          <span id="title"></span>
+          <span class="fi fi-fr" id="flag-fr" role="button" style="font-size: 15px;"></span>
+          <span class="fi fi-us" id="flag-us" role="button" style="font-size: 15px;"></span>
+        </h1>
       </div>
     </div>
     
     <div class="row">
+      <div class="col">
+        <div id="moves" class="btn-group-vertical" style="width: 250px;"></div>        
+      </div>
       <div class="col-sm-auto">
         <div id="board1" style="width: 500px; height: 500px;"></div>
-        <div id="upload" class="p-1">
-          <input type="file" id="pgnupload" style="display:none; "/>
-          <button id="pgnuploadlink" class="btn btn-small btn-block btn-primary"></button>
-          <button id="pgndownloadlink" class="btn btn-small btn-block btn-primary"></button>
-        </div>
-        <div class="p-1">
-          <span class="fi fi-fr" id="flag-fr" role="button"></span>
-          <span class="fi fi-us" id="flag-us" role="button"></span>
-        </div>
       </div>
       <div class="col">
-        
         <div id="toplay"></div>
-        <div id="breadcrumb"></div>
-        <div id="moves" class="btn-group-vertical" style="width: 250px;"></div>
+        <div id="breadcrumb"></div>        
       </div>
     </div>
-    <div class="row mt-3" id="help_text">
+    <div class="row mt-3">      
+      <div id="upload" class="p-1">
+        <input type="file" id="pgnupload" style="display:none; "/>
+        <button id="pgnuploadlink" class="btn btn-small btn-block btn-primary"></button>
+        <button id="pgndownloadlink" class="btn btn-small btn-block btn-primary"></button>
+      </div>
+      <div id="help_text"></div>
     </div>
   </div>
 

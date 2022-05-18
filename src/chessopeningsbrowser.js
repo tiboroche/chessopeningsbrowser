@@ -319,19 +319,19 @@ const OpeningTree = class OpeningTree {
   showbreadcrumb(movelist) {
     $("#breadcrumb").empty();
 
-    const p = $(`<p>&nbsp;</p>`).appendTo($("#breadcrumb"));
+    const ol = $(`<ol></ol>`).appendTo($("#breadcrumb"));    
+    let li = undefined;
 
-    for (let i = 0; i < movelist.length; i++) {
+    for (let i = 0; i < movelist.length; i++) {      
       const white = i % 2 === 0;
-      let breadcrumb = "";
       if (white) {
-        // white turn
-        breadcrumb += `${i / 2 + 1}.`;
+        // white turn        
+        li = $('<li></li>').appendTo(ol);
       }
-      breadcrumb += ` ${this.santohtml(movelist[i], white)} `;
+      const breadcrumb = ` ${this.santohtml(movelist[i], white)} `;
 
-      $(`<span role="button">${breadcrumb}</a>`)
-        .appendTo(p)
+      $(`<span role="button">${breadcrumb}</span>`)
+        .appendTo(li)
         .on("click", () => {
           this.backtomove(movelist[i]);
         });
@@ -348,7 +348,7 @@ const OpeningTree = class OpeningTree {
     movesdiv.empty();
     $("#toplay").empty();
 
-    const size = "h4";
+    const size = "h5";
 
     if (white) {
       $(`<p class="${size}">${_("white_to_play")}</p>`).appendTo($("#toplay"));
