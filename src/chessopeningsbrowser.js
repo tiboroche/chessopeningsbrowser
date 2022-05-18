@@ -237,50 +237,58 @@ const OpeningTree = class OpeningTree {
         }
       }      
 
-      debug(`Parsing game ${gamename}`);
+      debug(`Parsing game ${gamename}`);      
 
-      let curMove = start;
-      const localchess = new Chess();
+      const handleMoves = function(movelist, localchess, curMove){
+        movelist.forEach(function(move){
+          let found = false;          
+          const movesan = move.move;
 
-      const handleMove = function(move){
-        let found = false;
-        const movesan = move.move;
-        const chessmove = localchess.move(movesan);
-        for (let j = 0; j < curMove.successors.length; j++) {
-          const next = curMove.successors[j];
-          if (next.san === movesan) {
-            // found !
+          debug(`Handling ${move} / ${curMove}`);
+
+          if ( move.ravs ){            
+            move.ravs.forEach(function(ravlist){
+              debug(`New branch from ${ravlist.moves} / ${curMove}`);
+              handleMoves(ravlist.moves, new Chess(localchess.fen()), curMove);
+            });
+          }
+          
+          const chessmove = localchess.move(movesan);
+          debug(`Move : ${chessmove} / ${movesan}`);
+          for (let j = 0; j < curMove.successors.length; j++) {
+            const next = curMove.successors[j];
+            if (next.san === movesan) {
+              // found !
+              curMove = next;
+              found = true;
+              break;
+            }
+          }
+          // not found create a new node
+          if (!found) {
+            const next = new Move(movesan);
+            next.from = chessmove["from"];
+            next.to = chessmove["to"];
+            curMove.successors.push(next);
+            next.predecessor = curMove;
+            // debug("New move from", JSON.stringify(move), curMove, next);
             curMove = next;
-            found = true;
-            break;
           }
-        }
-        // not found create a new node
-        if (!found) {
-          const next = new Move(movesan);
-          next.from = chessmove["from"];
-          next.to = chessmove["to"];
-          curMove.successors.push(next);
-          next.predecessor = curMove;
-          // debug("New move from", JSON.stringify(move), curMove, next);
-          curMove = next;
-        }
 
-        if ( move.comments ){
-          const comments = move.comments.map(com => com.text).join(", ");
-          if ( curMove.comment ) {
-            curMove.comment += comments;
-          }else{
-            curMove.comment = comments;
+          if ( move.comments ){
+            const comments = move.comments.map(com => com.text).join(", ");
+            if ( curMove.comment ) {
+              curMove.comment += comments;
+            }else{
+              curMove.comment = comments;
+            }
           }
-        }
 
-        curMove.openings.push(gamename);
-      }
+          curMove.openings.push(gamename);
+        });
+      };
 
-      game.moves.forEach(function (move) {
-        handleMove(move);
-      });
+      handleMoves(game.moves, new Chess(), start);
     });
   }
 
