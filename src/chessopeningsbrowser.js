@@ -229,14 +229,22 @@ const OpeningTree = class OpeningTree {
   inittree(games) {
     const start = this.startMove;
     games.forEach(function (game) {
-      const gamename = game["headers"]["Event"];
+      let gamename;
+      for ( let i = 0; i < game["headers"].length; i++){
+        if ( game["headers"][i]["name"] == "Event" ){
+          gamename = game["headers"][i]["value"];
+          break;
+        }
+      }      
+
+      debug(`Parsing game ${gamename}`);
 
       let curMove = start;
       const localchess = new Chess();
 
-      game.moves.forEach(function (move) {
+      const handleMove = function(move){
         let found = false;
-        const movesan = move;
+        const movesan = move.move;
         const chessmove = localchess.move(movesan);
         for (let j = 0; j < curMove.successors.length; j++) {
           const next = curMove.successors[j];
@@ -258,15 +266,20 @@ const OpeningTree = class OpeningTree {
           curMove = next;
         }
 
-        // find the comment
-        for (let i = 0; i < game["comments"].length; i++) {
-          const comment = game["comments"][i];
-          if (comment["fen"] === localchess.fen()) {
-            curMove.comment = comment["comment"];
+        if ( move.comments ){
+          const comments = move.comments.map(com => com.text).join(", ");
+          if ( curMove.comment ) {
+            curMove.comment += comments;
+          }else{
+            curMove.comment = comments;
           }
         }
 
         curMove.openings.push(gamename);
+      }
+
+      game.moves.forEach(function (move) {
+        handleMove(move);
       });
     });
   }
@@ -489,8 +502,7 @@ const OpeningTree = class OpeningTree {
 
 function parse(content) {
   const games = [];
-  const errors = [];
-  const chess = new Chess();
+  const errors = [];  
 
   content = content.replaceAll("[Event", "~[Event");
   const rawgames = content.split("~");
@@ -501,22 +513,15 @@ function parse(content) {
     str = str.trim();
     if (str) {
       debug("Loading ", str);
-      const valid = chess.load_pgn(str);
-      debug("Got ", valid);
-
-      if (valid) {
-        const game = {};
-        game["headers"] = chess.header();
-        game["moves"] = chess.history();
-        game["comments"] = chess.get_comments();
-        return game;
-      } else {
-        const header = chess.header();
-        if (header) {
-          return `${header["Event"]} is invalid.`;
-        }
+      let parsed = undefined;
+      try {
+        parsed = pgnParser.parse(str);                    
+      } catch(error) {        
+        debug(`PGN ${str} is invalid !`)
         return "Invalid game found.";
       }
+      debug(`Got parsed ${JSON.stringify(parsed)}`)
+      return parsed[0];
     }
   };
 

@@ -6,7 +6,8 @@
     "chessground": "^8.2.1",
     "file-saver": "^2.0.5",
     "jquery": "^3.6.0",
-    "lz-string": "^1.4.4"
+    "lz-string": "^1.4.4",
+    "pgn-parser": "^2.2.0"
   },
   "devDependencies": {
     "eslint": "^8.10.0",

@@ -27,7 +27,7 @@ module.exports = function (grunt) {
           {
             expand: true,
             cwd: "node_modules/",
-            src: ["jquery/dist/jquery.min.js", "file-saver/dist/*.min.js*"],
+            src: ["jquery/dist/jquery.min.js", "file-saver/dist/*.min.js*", "pgn-parser/dist/*"],
             dest: "dist/",
             flatten: true,
           },
