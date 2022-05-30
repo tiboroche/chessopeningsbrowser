@@ -57,3 +57,8 @@
 [Result "*"]
 
 1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. g3 O-O 8. Bg2 d6 9. O-O Ne5 10. h3 {Surtout ne pas jouer Cb5 !} Nc4 *
+
+[Event "Ecossaise (contre sur Dh4)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nc3 Bb4 6. Be2 Qxe4 7. Nb5 {Menace de la fourchette en c7, le fou ne peut pas défendre en a5 (surcharge)} Qe5 8. f4 *
