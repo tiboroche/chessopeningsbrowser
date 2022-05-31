@@ -62,3 +62,20 @@
 [Result "*"]
 
 1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nc3 Bb4 6. Be2 Qxe4 7. Nb5 {Menace de la fourchette en c7, le fou ne peut pas défendre en a5 (surcharge)} Qe5 8. f4 *
+
+[Event "Ecossaise (4 cavaliers / d6)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 d6 6. Be2 Be7 7. O-O O-O *
+
+[Event "Ecossaise (4 cavaliers / Fc5)"]
+[Result "*"]
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 Bc5 6. Be3 Bb6 7. Nf5 O-O 8. Bxb6 axb6 9. Ne3 Re8 10. Bd3 {Ne pas défendre le pion e4 par f3 car on n'a pas encore roqué} d6 11. O-O *
+
+[Event "Ecossaise (4 cavaliers / Fb4 )"]
+[Result "*"]
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 Bb4 6. Nxc6 dxc6 7. Qxd8+ Kxd8 8. Bd2 *
+
+[Event "Ecossaise (4 cavaliers / Fb4 )"]
+[Result "*"]
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 Bb4 6. Nxc6 bxc6 7. Bd3 d5 8. exd5 cxd5 9. O-O O-O 10. Bg5 {Grosse pression sur le pion d5 après la prise du Cf6}
