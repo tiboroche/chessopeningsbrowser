@@ -672,7 +672,13 @@ function onload() {
   const urlParams = new URLSearchParams(window.location.search);
 
   const content = urlParams.get("content");
+  let contentUri = urlParams.get("contentUri");
   const lang = urlParams.get("lang") || navigator.language || "en";
+
+  if (contentUri) {
+    // base64 decode
+    contentUri = window.atob(contentUri);
+  }
 
   currentlang = lang.slice(0, 2);
   if (messages[currentlang] === undefined) {
@@ -723,6 +729,21 @@ function onload() {
       parsePGNfile(uncompressed, false);
       loaded = true;
     }
+  } else if (contentUri) {
+    fetch(contentUri)
+      .then(function (response) {
+        if (response.status == 200) {
+          return response.text();
+        }
+      })
+      .then(function (text) {
+        parsePGNfile(text, false);
+        loaded = true;
+      })
+      .catch(function (error) {
+        alert("Could not retrieve data from " + contentUri);
+        log("Error : " + error);
+      });
   }
 
   if (!loaded) {
