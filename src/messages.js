@@ -14,6 +14,10 @@ const messagesfr = {
   title: "Explorateur d'ouvertures d'échecs",
   pgnuploadlink: "Charger un fichier PGN",
   pgndownloadlink: "Télécharger le PGN courant",
+  urienterlink: "Charger depuis une URL",
+  load_uri_from_modal: "Charger",
+  enter_pgn_url: "Saisir l'URL du fichier PGN",
+  invalid_uri: "L'url _URI_ n'est pas valide !",
   white_to_play: "Trait aux blancs",
   black_to_play: "Trait aux noirs",
   help_text: `<p>Cet outil fournit un moyen simple de naviguer dans un répertoire personnel d'ouverture d'échecs.</p>
@@ -50,6 +54,10 @@ const messagesen = {
   title: "CHess Openings Browser",
   pgnuploadlink: "Upload new PGN file",
   pgndownloadlink: "Download current PGN file",
+  urienterlink: "Load from URL",
+  load_uri_from_modal: "Load",
+  enter_pgn_url: "Enter PGN file URL",
+  invalid_uri: "The URL _URI_ is not valid !",
   white_to_play: "White to play",
   black_to_play: "Black to play",
   help_text: `      <p>This tool is meant to be a simple way to explore a custom repository of openings.</p>

@@ -182,7 +182,7 @@ const OpeningTree = class OpeningTree {
   startMove;
   chess;
 
-  constructor(content, updateuri) {
+  constructor(content, updateuri, contentUri) {
     this.content = content;
     this.startMove = new Move("");
     this.currentMove = this.startMove;
@@ -190,6 +190,7 @@ const OpeningTree = class OpeningTree {
     this.board = new Board(this);
     this.gameslength = 0;
     this.errors = undefined;
+    this.contentUri = contentUri;
 
     let games = this.load();
 
@@ -202,7 +203,7 @@ const OpeningTree = class OpeningTree {
     if (games) {
       this.inittree(games);
 
-      if (updateuri) {
+      if (updateuri || this.contentUri) {
         this.updateuri();
       }
 
@@ -253,7 +254,11 @@ const OpeningTree = class OpeningTree {
   updateuri() {
     let url = window.location.origin + window.location.pathname;
 
-    url += "?content=" + LZString.compressToEncodedURIComponent(this.content);
+    if (this.contentUri) {
+      url += "?contentUri=" + this.contentUri;
+    } else {
+      url += "?content=" + LZString.compressToEncodedURIComponent(this.content);
+    }
 
     window.history.pushState(undefined, "", url);
 
@@ -642,13 +647,13 @@ function readOneFile(e, readerfunction) {
   reader.readAsText(file);
 }
 
-function parsePGNfile(content, updateuri = true) {
+function parsePGNfile(content, updateuri = true, contentUri = false) {
   if (currentTree && currentTree.board) {
     try {
       currentTree.board.destroy();
     } catch {}
   }
-  currentTree = new OpeningTree(content, updateuri);
+  currentTree = new OpeningTree(content, updateuri, contentUri);
 }
 
 function setlang(lang) {
@@ -663,6 +668,48 @@ function setlang(lang) {
       location.pathname +
       "?" +
       urlParams.toString();
+  }
+}
+
+// taken from https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
+function isValidHttpUrl(string) {
+  let url;
+
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+
+  return url.protocol === "http:" || url.protocol === "https:";
+}
+
+function loaduri(contentUri, updateuri = true) {
+  const b64uri = window.btoa(contentUri);
+
+  if (isValidHttpUrl(contentUri)) {
+    fetch(contentUri)
+      .then(function (response) {
+        if (response.status == 200) {
+          return response.text();
+        } else {
+          alert(`The URL ${contentUri} returned response code ${response.status}.`);
+          return false;
+        }
+      })
+      .then(function (text) {
+        log("Got data " + text.length);
+        parsePGNfile(text, false, updateuri ? b64uri : false);
+
+        return true;
+      })
+      .catch(function (error) {
+        alert(`Could not retrieve data from ${contentUri}.`);
+        log("Error : " + error);
+        return false;
+      });
+  } else {
+    alert(_("invalid_uri").replace("_URI_", contentUri));
   }
 }
 
@@ -701,6 +748,14 @@ function onload() {
     $("#pgnupload").trigger("click");
   });
 
+  $("#urienterlink").on("click", function () {
+    $("#enter_uri").modal("show");
+  });
+
+  $("#load_uri_from_modal").on("click", function () {
+    loaduri($("#pgn_url").val());
+  });
+
   $("#flag-fr").on("click", () => {
     setlang("fr");
   });
@@ -717,6 +772,9 @@ function onload() {
   setMessage("title");
   setMessage("pgnuploadlink");
   setMessage("pgndownloadlink");
+  setMessage("urienterlink");
+  setMessage("load_uri_from_modal");
+  setMessage("enter_pgn_url");
   setMessage("help_text");
   setMessage("upload_result_title");
   setMessage("upload_result_close");
@@ -730,20 +788,7 @@ function onload() {
       loaded = true;
     }
   } else if (contentUri) {
-    fetch(contentUri)
-      .then(function (response) {
-        if (response.status == 200) {
-          return response.text();
-        }
-      })
-      .then(function (text) {
-        parsePGNfile(text, false);
-        loaded = true;
-      })
-      .catch(function (error) {
-        alert("Could not retrieve data from " + contentUri);
-        log("Error : " + error);
-      });
+    loaded = loaduri(contentUri, false);
   }
 
   if (!loaded) {
