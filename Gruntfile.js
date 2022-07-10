@@ -81,7 +81,7 @@ module.exports = function (grunt) {
     shell: {
       insert_ga: {
         command:
-          'sed -e "/____GOOGLE_ANALYTICS____/{" -e "r./ga.js" -e "d" -e "}" -i dist/index.html',
+          'sed -e "/<!--____GOOGLE_ANALYTICS____-->/{" -e "r./ga.js" -e "d" -e "}" -i dist/index.html',
       },
     },
   });
