@@ -44,16 +44,40 @@ let currentlang = "en";
 
 // functions related to the board display
 const Board = class Board {
-  constructor(chess) {
+  constructor(openingTree) {
     const config = {
-      viewOnly: true,
+      movable: {
+        free: false,
+        showDests: true,
+        events: {
+          after: (orig, dest) => {
+            this.movecallback(orig, dest);
+          },
+        },
+      },
+      drawable: {
+        enabled: false,
+        visible: true,
+        eraseOnClick: false,
+      },
     };
 
     // eslint-disable-next-line new-cap
     const ground = Chessground(document.getElementById("board1"), config);
 
     this.board = ground;
-    this.chess = chess;
+    this.openingTree = openingTree;
+    this.chess = openingTree.chess;
+  }
+
+  movecallback(orig, dest) {
+    const curMove = this.openingTree.currentMove;
+
+    curMove.successors.forEach((succ) => {
+      if (succ.from === orig && succ.to === dest) {
+        this.openingTree.makemove(succ);
+      }
+    });
   }
 
   reset() {
@@ -73,15 +97,35 @@ const Board = class Board {
     this.board.state.lastMove = [move.from, move.to];
   }
 
-  showmoves(moves, hightlight= undefined) {
+  showmoves(moves, hightlight = undefined) {
     const shapes = moves.map(function (move) {
-      const brush = move == hightlight ? "yellow" : "green"; 
+      const brush = move == hightlight ? "yellow" : "green";
       return { orig: move.from, dest: move.to, brush: brush };
+    });
+
+    const dests = new Map();
+
+    moves.forEach(function (move) {
+      let destinations = dests.get(move.from);
+      if (!destinations) {
+        destinations = [];
+        dests.set(move.from, destinations);
+      }
+      destinations.push(move.to);
     });
 
     debug("Drawing shapes", JSON.stringify(shapes));
 
+    const color = this.chess.turn() === "w" ? "white" : "black";
+
     this.board.setShapes(shapes);
+    this.board.set({
+      turnColor: color,
+      movable: {
+        dests: dests,
+        color: color,
+      },
+    });
   }
 
   move(move) {
@@ -143,7 +187,7 @@ const OpeningTree = class OpeningTree {
     this.startMove = new Move("");
     this.currentMove = this.startMove;
     this.chess = new Chess();
-    this.board = new Board(this.chess);
+    this.board = new Board(this);
     this.gameslength = 0;
     this.errors = undefined;
 
@@ -222,37 +266,36 @@ const OpeningTree = class OpeningTree {
     }
 
     $("#upload_result_text").html(message);
-    $("#upload_result").modal('show');
-
+    $("#upload_result").modal("show");
   }
 
   inittree(games) {
     const start = this.startMove;
     games.forEach(function (game) {
       let gamename;
-      for ( let i = 0; i < game["headers"].length; i++){
-        if ( game["headers"][i]["name"] == "Event" ){
+      for (let i = 0; i < game["headers"].length; i++) {
+        if (game["headers"][i]["name"] == "Event") {
           gamename = game["headers"][i]["value"];
           break;
         }
-      }      
+      }
 
-      debug(`Parsing game ${gamename}`);      
+      debug(`Parsing game ${gamename}`);
 
-      const handleMoves = function(movelist, localchess, curMove){
-        movelist.forEach(function(move){
-          let found = false;          
+      const handleMoves = function (movelist, localchess, curMove) {
+        movelist.forEach(function (move) {
+          let found = false;
           const movesan = move.move;
 
           debug(`Handling ${move} / ${curMove}`);
 
-          if ( move.ravs ){            
-            move.ravs.forEach(function(ravlist){
+          if (move.ravs) {
+            move.ravs.forEach(function (ravlist) {
               debug(`New branch from ${ravlist.moves} / ${curMove}`);
               handleMoves(ravlist.moves, new Chess(localchess.fen()), curMove);
             });
           }
-          
+
           const chessmove = localchess.move(movesan);
           debug(`Move : ${chessmove} / ${movesan}`);
           for (let j = 0; j < curMove.successors.length; j++) {
@@ -275,11 +318,11 @@ const OpeningTree = class OpeningTree {
             curMove = next;
           }
 
-          if ( move.comments ){
-            const comments = move.comments.map(com => com.text).join(", ");
-            if ( curMove.comment ) {
+          if (move.comments) {
+            const comments = move.comments.map((com) => com.text).join(", ");
+            if (curMove.comment) {
               curMove.comment += comments;
-            }else{
+            } else {
               curMove.comment = comments;
             }
           }
@@ -340,14 +383,14 @@ const OpeningTree = class OpeningTree {
   showbreadcrumb(movelist) {
     $("#breadcrumb").empty();
 
-    const ol = $(`<ol></ol>`).appendTo($("#breadcrumb"));    
+    const ol = $(`<ol></ol>`).appendTo($("#breadcrumb"));
     let li = undefined;
 
-    for (let i = 0; i < movelist.length; i++) {      
+    for (let i = 0; i < movelist.length; i++) {
       const white = i % 2 === 0;
       if (white) {
-        // white turn        
-        li = $('<li></li>').appendTo(ol);
+        // white turn
+        li = $("<li></li>").appendTo(ol);
       }
       const breadcrumb = ` ${this.santohtml(movelist[i], white)} `;
 
@@ -389,17 +432,25 @@ const OpeningTree = class OpeningTree {
       '<div class="btn-group btn-group-sm" role="group" ></div>'
     ).appendTo(movesdiv);
 
-    const button = (to, text, cssclass, clickHandler, mousenter=undefined, mouseleave=undefined) => {
-      const button = $(`<button class="${buttonsclass} ${cssclass}">${text}</button>`)
+    const button = (
+      to,
+      text,
+      cssclass,
+      clickHandler,
+      mousenter = undefined,
+      mouseleave = undefined
+    ) => {
+      const button = $(
+        `<button class="${buttonsclass} ${cssclass}">${text}</button>`
+      )
         .appendTo(to)
         .on("click", clickHandler);
-        if (mousenter){
-          button.on("mouseover", mousenter);
-        }
-        if (mouseleave){
-          button.on("mouseleave", mouseleave);
-        }
-
+      if (mousenter) {
+        button.on("mouseover", mousenter);
+      }
+      if (mouseleave) {
+        button.on("mouseleave", mouseleave);
+      }
     };
 
     button(topbuttons, _("back"), otherbuttonscss, () => {
@@ -441,7 +492,7 @@ const OpeningTree = class OpeningTree {
         },
         () => {
           this.board.showmoves(this.currentMove.successors);
-        },
+        }
       );
     });
 
@@ -510,7 +561,7 @@ const OpeningTree = class OpeningTree {
 
 function parse(content) {
   const games = [];
-  const errors = [];  
+  const errors = [];
 
   content = content.replaceAll("[Event", "~[Event");
   const rawgames = content.split("~");
@@ -523,12 +574,12 @@ function parse(content) {
       debug("Loading ", str);
       let parsed = undefined;
       try {
-        parsed = pgnParser.parse(str);                    
-      } catch(error) {        
-        debug(`PGN ${str} is invalid !`)
+        parsed = pgnParser.parse(str);
+      } catch (error) {
+        debug(`PGN ${str} is invalid !`);
         return "Invalid game found.";
       }
-      debug(`Got parsed ${JSON.stringify(parsed)}`)
+      debug(`Got parsed ${JSON.stringify(parsed)}`);
       return parsed[0];
     }
   };
@@ -588,7 +639,7 @@ function readOneFile(e, readerfunction) {
     const contents = e.target.result;
     readerfunction(contents);
   };
-  reader.readAsText(file);  
+  reader.readAsText(file);
 }
 
 function parsePGNfile(content, updateuri = true) {
