@@ -83,6 +83,10 @@ module.exports = function (grunt) {
         command:
           'sed -e "/<!--____GOOGLE_ANALYTICS____-->/{" -e "r./ga.js" -e "d" -e "}" -i dist/index.html',
       },
+      insert_version: {
+        command:
+        'sed -e "s/__VERSION__/$(date +"%y%m%d%H%M%S")/" -i dist/index.html',
+      }
     },
   });
 
@@ -99,6 +103,7 @@ module.exports = function (grunt) {
       "uglify",
       "copy",
       "shell:insert_ga",
+      "shell:insert_version",
     ]);
   } else {
     grunt.registerTask("default", ["clean", "uglify", "copy"]);
