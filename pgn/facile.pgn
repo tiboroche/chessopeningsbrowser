@@ -1,0 +1,81 @@
+[Event "Ecossaise (erreur noire, gain de pièce)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Nf6 6. Nxc6 bxc6 7. Bxc5 *
+
+[Event "Ecossaise (erreur noire, pions triplés)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 d6 6. Nxc6 bxc6 7. Bxc5 dxc5 8. Qxd8+ Kxd8 *
+
+[Event "Ecossaise (erreur blanche, mauvaise position)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. Nxc6 {Surtout ne pas prendre en c6 ici à cause de la dame} Bxe3 7. fxe3 Qxc6 *
+
+[Event "Ecossaise (d6 déroque des noirs)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 d6 4. dxe5 dxe5 5. Qxd8+ Kxd8 6. Bc4 f6 7. Be3 Bd6 8. Nc3 a6 9. O-O-O *
+
+[Event "Ecossaise (gain du cavalier)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 Nxd4 4. Nxd4 exd4 5. Qxd4 Nf6 6. e5 Nh5 7. g4 *
+
+[Event "Ecossaise (pion arriéré)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 Nxd4 4. Nxd4 exd4 5. Qxd4 c5 {Chasse la dame mais au prix d'un pion arriéré en d qui va être problématique pour les noirs} 6. Qd3 d6 7. Nc3 *
+
+[Event "Ecossaise (roques opposés)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 Nxd4 4. Nxd4 exd4 5. Qxd4 d6 6. Nc3 Nf6 7. f3 Be7 8. Be3 O-O 9. O-O-O Be6 {Mener une attaque de pions sur l'aile roi} *
+
+[Event "Ecossaise (petit roque)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 Nxd4 4. Nxd4 exd4 5. Qxd4 d6 6. Nc3 Nf6 7. Bc4 {Très important de jouer Fc4} Be7 8. Be3 O-O 9. h3 {Pour empêcher Cg4} Re8 10. O-O a6 11. a4 {Pour empêcher b5} *
+
+[Event "Ecossaise (mat Df7)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 Nxd4 4. Nxd4 exd4 5. Qxd4 d6 6. Nc3 Nf6 7. Bc4 {Très important de jouer Fc4} Be7 8. Be3 Ng4 9. Qxg7 Bf6 10. Qxf7# *
+
+[Event "Ecossaise (Fort centre, très bonne position pour les blancs)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nxd4 7. cxd4 Bb4+ 8. Nc3 *
+
+[Event "Ecossaise (Fianchetto Fg2)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. g3 d5 8. Bg2 dxe4 {Si Dg3, jouer Cb5 pour menacer la fouchette en c7} 9. O-O O-O 10. Nd2 Bb6 11. Nxe4 Qg6 *
+
+[Event "Ecossaise (Fianchetto Fg2 sans prise e4)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Bc5 5. Be3 Qf6 6. c3 Nge7 7. g3 O-O 8. Bg2 d6 9. O-O Ne5 10. h3 {Surtout ne pas jouer Cb5 !} Nc4 *
+
+[Event "Ecossaise (contre sur Dh4)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Qh4 5. Nc3 Bb4 6. Be2 Qxe4 7. Nb5 {Menace de la fourchette en c7, le fou ne peut pas défendre en a5 (surcharge)} Qe5 8. f4 *
+
+[Event "Ecossaise (4 cavaliers / d6)"]
+[Result "*"]
+
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 d6 6. Be2 Be7 7. O-O O-O *
+
+[Event "Ecossaise (4 cavaliers / Fc5)"]
+[Result "*"]
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 Bc5 6. Be3 Bb6 7. Nf5 O-O 8. Bxb6 axb6 9. Ne3 Re8 10. Bd3 {Ne pas défendre le pion e4 par f3 car on n'a pas encore roqué} d6 11. O-O *
+
+[Event "Ecossaise (4 cavaliers / Fb4 )"]
+[Result "*"]
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 Bb4 6. Nxc6 dxc6 7. Qxd8+ Kxd8 8. Bd2 *
+
+[Event "Ecossaise (4 cavaliers / Fb4 )"]
+[Result "*"]
+1. e4 e5 2. Nf3 Nc6 3. d4 exd4 4. Nxd4 Nf6 5. Nc3 Bb4 6. Nxc6 bxc6 7. Bd3 d5 8. exd5 cxd5 9. O-O O-O 10. Bg5 {Grosse pression sur le pion d5 après la prise du Cf6}
