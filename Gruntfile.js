@@ -74,6 +74,11 @@ module.exports = function (grunt) {
             src: "assets/**",
             dest: "dist/",
           },
+          {
+            expand: true,
+            src: "pgn/*",
+            dest: "dist/",
+          }
         ],
       },
     },

@@ -720,6 +720,7 @@ function onload() {
 
   const content = urlParams.get("content");
   let contentUri = urlParams.get("contentUri");
+  const pgn = urlParams.get("pgn");
   const lang = urlParams.get("lang") || navigator.language || "en";
 
   if (contentUri) {
@@ -789,6 +790,8 @@ function onload() {
     }
   } else if (contentUri) {
     loaded = loaduri(contentUri, false);
+  } else if (pgn){
+    loaded = loaduri(new URL(`pgn/${pgn}.pgn`, window.location.origin), false);
   }
 
   if (!loaded) {
